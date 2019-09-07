@@ -26,6 +26,7 @@ def register(request):
             for field in form:
                 for error in field.errors:
                     messages.error(request, error)
+
     form = UserCreationForm
     return render(request,
                   'main/register.html',
