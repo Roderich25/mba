@@ -1,15 +1,25 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
-from main.models import Tutorial
+from main.models import Tutorial, TutorialCategory, TutorialSeries
 from .forms import NewUserForm
+
+
+def single_slug(request, single_slug):
+    categories = [c.category_slug for c in TutorialCategory.objects.all()]
+    if single_slug in categories:
+        return HttpResponse(f"{single_slug} is a category.")
+    tutorials = [t.category_slug for t in Tutorial.objects.all()]
+    if single_slug in tutorials:
+        return HttpResponse(f"{single_slug} is a tutorial.")
+    return HttpResponse(f"{single_slug} does not exist!")
 
 
 def homepage(request):
     return render(request=request,
-                  template_name="main/home.html",
-                  context={"tutorials": Tutorial.objects.all}
+                  template_name="main/categories.html",
+                  context={"categories": TutorialCategory.objects.all}
                   )
 
 
