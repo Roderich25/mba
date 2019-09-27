@@ -2,7 +2,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
+import torch.optim as optim
 from torchvision import transforms, datasets
+import matplotlib.pyplot as plt
 
 
 train = datasets.MNIST("", train=True, download=True, transform=transforms.Compose([transforms.ToTensor()]))
@@ -33,4 +35,36 @@ net = Net()
 X = torch.rand((28,28))
 X = X.view(-1, 28*28)
 output = net(X)
-print(output)
+
+optimizer = optim.Adam(net.parameters(), lr=0.001)
+
+EPOCHS = 3
+
+for epoch in range(EPOCHS):
+    for data in trainset:
+        X, y = data
+        net.zero_grad()
+        output = net(X.view(-1, 28*28))
+        loss = F.nll_loss(output, y)
+        loss.backward()
+        optimizer.step()
+    print(loss)
+
+correct = 0
+total = 0
+
+with torch.no_grad():
+    for data in testset:
+        X, y = data
+        output = net(X.view(-1, 28 * 28))
+        for idx, i in enumerate(output):
+            if torch.argmax(i) == y[idx]:
+                correct += 1
+            total += 1
+
+print(f"Accuracy: {round(correct/total, 3)}")
+
+plt.imshow(X[1].view(28, 28))
+plt.show()
+print(torch.argmax(net(X[1].view(-1, 28*28))[0]))
+
