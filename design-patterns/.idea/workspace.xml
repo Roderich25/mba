@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ad704179-b1ff-4c25-8870-4c148c91d271" name="Default Changelist" comment="" />
+    <list default="true" id="af1ebf93-79d5-44a2-b88c-30b96f6d54e6" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/tigger.py" beforeDir="false" afterPath="$PROJECT_DIR$/tigger.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,7 +81,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>

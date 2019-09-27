@@ -6,6 +6,9 @@ class _Tigger:  # leading underscore means private class
     def roar(self):
         return "Grrr!"
 
+    def greet(self):
+        return "Hello"
+
 
 _instance = None
 
