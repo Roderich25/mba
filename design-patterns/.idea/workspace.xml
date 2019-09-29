@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="af1ebf93-79d5-44a2-b88c-30b96f6d54e6" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/calculator.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/template_method.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/calculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/calculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/template_method.py" beforeDir="false" afterPath="$PROJECT_DIR$/template_method.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -44,7 +45,7 @@
     </option>
   </component>
   <component name="RunManager">
-    <configuration name="singleton" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+    <configuration name="template_method" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="design-patterns" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -56,7 +57,7 @@
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/singleton.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/template_method.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -71,7 +72,7 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="ad704179-b1ff-4c25-8870-4c148c91d271" name="Default Changelist" comment="" />
+      <changelist id="af1ebf93-79d5-44a2-b88c-30b96f6d54e6" name="Default Changelist" comment="" />
       <created>1569612381283</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
