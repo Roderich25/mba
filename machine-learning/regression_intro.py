@@ -1,11 +1,13 @@
-import pandas as pd
-import quandl, math, os, datetime
-import numpy as np
-from sklearn import preprocessing, svm
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
+import datetime
 import matplotlib.pyplot as plt
+import numpy as np
+import os
+import pickle
+import quandl
 from matplotlib import style
+from sklearn import preprocessing
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
 
 style.use('ggplot')
 
@@ -33,12 +35,16 @@ y = np.array(df['label'])
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20)
 
 
-clf = LinearRegression(n_jobs=-1)
-# clf = svm.SVR()
-clf.fit(X_train, y_train)
+# clf = LinearRegression(n_jobs=-1)
+# # clf = svm.SVR()
+# clf.fit(X_train, y_train)
+# with open('linear_regression.pickle', 'wb') as f:
+#     pickle.dump(clf, f)
+
+pickle_in = open('linear_regression.pickle', 'rb')
+clf = pickle.load(pickle_in)
+
 accuracy = clf.score(X_test, y_test)
-
-
 forecast_set = clf.predict(X_last)
 print(forecast_set, accuracy, forecast_out)
 
