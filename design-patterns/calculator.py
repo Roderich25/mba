@@ -12,7 +12,7 @@ class AverageCalculator(ABC):
                 num_items += 1
             if num_items == 0:
                 raise RuntimeError("Can't compute average of zero items.")
-            return total_sum/num_items
+            return total_sum / num_items
         finally:
             self.dispose()
 
@@ -26,6 +26,7 @@ class AverageCalculator(ABC):
 
     def dispose(self):
         pass
+
 
 class FileAverageCalculator(AverageCalculator):
 
@@ -58,3 +59,18 @@ class MemoryAverageCalculator(AverageCalculator):
         output = self.list_in[self.i]
         self.i += 1
         return output
+
+
+class GeneratorAdapter:
+
+    def __init__(self, adaptee):
+        self.adaptee = adaptee
+
+    def readline(self):
+        try:
+            return next(self.adaptee)
+        except StopIteration:
+            return ''
+
+    def close(self):
+        pass
