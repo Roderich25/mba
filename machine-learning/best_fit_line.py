@@ -16,6 +16,17 @@ def best_fit_slope_intercept(x, y):
     return slope, intercept
 
 
+def squared_error(ys_orig, ys_line):
+    return sum((ys_orig - ys_line) ** 2)
+
+
+def coefficient_of_determination(ys_orig, ys_line):
+    y_mean_line = [mean(ys_orig) for y in ys_orig]
+    squared_error_reg = squared_error(ys_orig, ys_line)
+    squared_error_yhat = squared_error(ys_orig, y_mean_line)
+    return 1 - (squared_error_reg/squared_error_yhat)
+
+
 m, b = best_fit_slope_intercept(xs, ys)
 regression_line = [m*x+b for x in xs]
 print(m, b, regression_line)
@@ -27,3 +38,6 @@ print(predict_y)
 plt.scatter(xs, ys)
 plt.plot(xs, regression_line)
 plt.show()
+
+r_squared = coefficient_of_determination(ys, regression_line)
+print(r_squared)
