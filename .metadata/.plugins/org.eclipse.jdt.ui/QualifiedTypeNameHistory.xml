@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<qualifiedTypeNameHistroy/>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="org.springframework.web.bind.WebDataBinder"/>
+<fullyQualifiedTypeName name="org.springframework.beans.propertyeditors.StringTrimmerEditor"/>
+<fullyQualifiedTypeName name="org.springframework.web.bind.annotation.InitBinder"/>
+</qualifiedTypeNameHistroy>
