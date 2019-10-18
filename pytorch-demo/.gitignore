@@ -1,7 +1,0 @@
-.idea/
-venv/
-/venv/*
-MNIST/
-PetImages/Cats/*
-PetImages/Dogs/*
-PetImages/*
