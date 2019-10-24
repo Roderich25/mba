@@ -1,5 +1,12 @@
 from django.contrib import admin
-from . models import Post
+from . models import Post, Comentario
+
+
+@admin.register(Comentario)
+class ComentarioAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'email', 'post', 'creado', 'activo')
+    list_filter = ('activo', 'creado', 'actualizado')
+    search_fields = ('nombre', 'email', 'comentario')
 
 
 @admin.register(Post)

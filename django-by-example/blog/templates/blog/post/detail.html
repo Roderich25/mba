@@ -11,4 +11,35 @@
             Comparte este post
         </a>
     </p>
+
+    <h2>Posts Similares</h2>
+    {% for post in posts_similares %}
+        <p><a href="{{ post.get_absolute_url }}">{{ post.titulo }}</a></p>
+    {% empty %}
+        <p>No hay post similares aún.</p>
+    {% endfor %}
+
+    {% with comentarios.count as total_comentarios %}
+        <h2>{{ total_comentarios }} comentario{{ total_comentarios|pluralize }}</h2>
+    {% endwith %}
+    {% for comentario in comentarios %}
+        <div class="comment">
+            <p class="info">
+                Comentario {{ forloop.counter }}, hecho por {{ comentario.nombre }}
+                el {{ comentario.creado }}
+            </p>
+        {{ comentario.comentario|linebreaks }}
+        </div>
+    {% empty %}
+        <p>No hay comentarios aún.</p>
+    {% endfor %}
+    {% if comentario_nuevo %}
+        <h2>Comentario añadido</h2>
+    {% endif %}
+        <h2>Añadir nuevo comentario</h2>
+        <form method="post" action=".">
+            {% csrf_token %}
+            {{ comentario_form.as_p }}
+            <p><input type="submit" value="Añadir comentario"></p>
+        </form>
 {% endblock %}

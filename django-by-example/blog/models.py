@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
+from taggit.managers import TaggableManager
 
 
 class PublishedManager(models.Manager):
@@ -21,6 +22,7 @@ class Post(models.Model):
     estatus = models.CharField(max_length=10, choices=STATUS_CHOICES, default='boceto')
     objectos = models.Manager()
     publicados = PublishedManager()
+    tags = TaggableManager()
 
     class Meta:
         ordering = ('-publicado',)
@@ -34,3 +36,19 @@ class Post(models.Model):
                                                  self.publicado.month,
                                                  self.publicado.day,
                                                  self.slug])
+
+
+class Comentario(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comentarios')
+    nombre = models.CharField(max_length=80)
+    email = models.EmailField()
+    comentario = models.TextField()
+    creado = models.DateTimeField(auto_now_add=True)
+    actualizado = models.DateTimeField(auto_now=True)
+    activo = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ('creado',)
+
+    def __str__(self):
+        return f'Comentario de {self.nombre} en "{self.post}"'
