@@ -1,0 +1,8 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+    <div class="post-entry">
+        <h2><a href="">{{ post.title }}</a></h2>
+        <p>{{ post.body | safe }}</p>
+    </div>
+{% endblock %}

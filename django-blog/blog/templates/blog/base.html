@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:􏰇􏰁􏰁" rel="stylesheet">
+    <link href="{% static 'blog/css/base.css' %}" rel="stylesheet">
+    <link href="{% static 'tinymce/css/prism.css'%}" rel="stylesheet">
+  <title>Django Blog</title>
+</head>
+<body>
+<header>
+    <h1><a href="{% url 'home' %}">Django Blog</a></h1>
+</header>
+<div>
+    {% block content %}
+    {% endblock %}
+</div>
+<script src="{% static 'tinymce/js/prism.js'%}"></script>
+</body>
+</html>
