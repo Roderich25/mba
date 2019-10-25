@@ -1,10 +1,10 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import Client, TestCase
 from django.urls import reverse
 from .models import Post
 
 
-class BlogTest(TestCase):
+class BlogTests(TestCase):
 
     def setUp(self):
         self.user = get_user_model().objects.create_user(username='testuser',
@@ -19,12 +19,10 @@ class BlogTest(TestCase):
         post = Post(title='A sample title')
         self.assertEqual(str(post), post.title)
 
-
     def test_post_content(self):
         self.assertEqual(f'{self.post.title}', 'A good title')
         self.assertEqual(f'{self.post.author}', 'testuser')
         self.assertEqual(f'{self.post.body}', 'Nice body content')
-
 
     def test_post_list_view(self):
         response = self.client.get(reverse('home'))
@@ -39,4 +37,25 @@ class BlogTest(TestCase):
         self.assertEqual(no_response.status_code, 404)
         self.assertContains(response, 'A good title')
         self.assertTemplateUsed(response, 'blog/post_detail.html')
+
+    def test_create_post_view(self):
+        response = self.client.post(reverse('new_post'), {
+            'title': 'new title',
+            'body': 'new text',
+            'author': self.user
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'new title')
+        self.assertContains(response, 'new text')
+
+    def test_update_post_view(self):
+        response = self.client.post(reverse('edit_post', args='1'), {
+            'title': 'updated title',
+            'body': 'updated text'
+        })
+        self.assertEqual(response.status_code, 302)
+
+    def test_delete_post_view(self):
+        response = self.client.get(reverse('delete_post', args='1'))
+        self.assertEqual(response.status_code, 200)
 

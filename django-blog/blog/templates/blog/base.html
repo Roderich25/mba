@@ -6,6 +6,8 @@
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:􏰇􏰁􏰁" rel="stylesheet">
     <link href="{% static 'blog/css/base.css' %}" rel="stylesheet">
     <link href="{% static 'tinymce/css/prism.css'%}" rel="stylesheet">
+    {% block head %}
+    {% endblock %}
   <title>Django Blog</title>
 </head>
 <body>
@@ -14,7 +16,7 @@
         <h1><a href="{% url 'home' %}">Django Blog</a></h1>
     </div>
     <div class="nav-right">
-        <h1><a href="{% url 'post_new' %}">New Post</a></h1>
+        <a href="{% url 'new_post' %}">+ New Post</a>
     </div>
 </header>
 <div>
