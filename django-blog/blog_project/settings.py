@@ -124,6 +124,9 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'tinymce/static/'),
 ]
 
+LOGIN_REDIRECT_URL = 'blog:home'
+LOGOUT_REDIRECT_URL = 'blog:home'
+
 STATIC_URL = '/static/'
 
 TINYMCE_DEFAULT_CONFIG = {
