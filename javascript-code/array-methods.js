@@ -1,17 +1,17 @@
 const items = [
-    {name:'Bike', price: 100},
-    {name:'TV', price: 200},
-    {name:'Album', price: 10},
-    {name:'Book', price: 5},
-    {name:'Phone', price: 500},
-    {name:'Computer', price: 1000},
-    {name:'Keyboard', price: 25},
-    {name:'Watch', price: 60},    
+    {name:'Album', prices: 10},
+    {name:'Bike', prices: 100},
+    {name:'Book', prices: 5},
+    {name:'Computer', prices: 1000},
+    {name:'Keyboard', prices: 25},
+    {name:'Phone', prices: 500},
+    {name:'TV', prices: 200},
+    {name:'Watch', prices: 60},    
 ]
 
 const filteredItems = items.filter(
     (item) => {
-        return item.price <= 100;
+        return item.prices <= 100;
     }
 )
 
@@ -39,7 +39,7 @@ items.forEach(
 
 const hasInexpensiveItems = items.some(
     (item) => {
-        return item.price <= 100;
+        return item.prices <= 100;
     }
 )
 
@@ -47,7 +47,7 @@ console.log(hasInexpensiveItems)
 
 const allInexpensiveItems = items.every(
     (item) => {
-        return item.price <= 100;
+        return item.prices <= 100;
     }
 )
 
@@ -55,7 +55,7 @@ console.log(allInexpensiveItems);
 
 const total = items.reduce(
     (currentTotal, item) => {
-        return item.price + currentTotal;
+        return item.prices + currentTotal;
     }, 0
 )
 
