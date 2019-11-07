@@ -4,6 +4,7 @@ package com.rodrigo.spring.mvc;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import javax.validation.constraints.Email;
 
@@ -17,6 +18,9 @@ public class Alumno {
 	
 	@Email
 	private String email;
+	
+	@Pattern(regexp="[0-9]{5}", message="Solo 5 valores númericos!")
+	private String codigoPostal;
 	
 	@Min(value=10, message="Enter a valid age greater than 10 yeard old.")
 	@Max(value=100, message="Maximum age is 100 years old.")
@@ -50,6 +54,14 @@ public class Alumno {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getCodigoPostal() {
+		return codigoPostal;
+	}
+
+	public void setCodigoPostal(String codigoPostal) {
+		this.codigoPostal = codigoPostal;
 	}
 
 	public int getEdad() {

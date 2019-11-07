@@ -17,6 +17,9 @@
 		
 		E-mail: <form:input path="email"/>
 		<form:errors path="email" style="color:red"/><br>
+
+		C.P.: <form:input path="codigoPostal"/>
+		<form:errors path="codigoPostal" style="color:red"/><br>
 		
 		Edad: <form:input path="edad" type="number"/>
 		<form:errors path="edad" style="color:red"/><br>		

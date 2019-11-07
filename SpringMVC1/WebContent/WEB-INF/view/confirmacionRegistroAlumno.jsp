@@ -13,6 +13,7 @@
 <p>La asignatra elegida es ${elAlumno.getOptativa()}.</p>
 <p>La ciudad de estudios será ${elAlumno.getCiudad()}.</p>
 <p>El idiomas será ${elAlumno.getIdioma()}.</p>
-<p>Información enviada a ${elAlumno.getEmail()}</p>
+<p>Información enviada a ${elAlumno.getEmail()} </p>
+<p>Código Postal: ${elAlumo.getCodigoPostal()}</p>
 </body>
 </html>
