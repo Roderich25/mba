@@ -7,6 +7,12 @@ class Clientes(models.Model):
     email = models.EmailField()
     telefono = models.CharField(max_length=10)
 
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name_plural = "Clientes"
+
 
 class Articulos(models.Model):
     nombre = models.CharField(max_length=30)
@@ -16,8 +22,14 @@ class Articulos(models.Model):
     def __str__(self):
         return self.nombre
 
+    class Meta:
+        verbose_name_plural = "Artículos"
+
 
 class Pedidos(models.Model):
     numero = models.IntegerField()
     fecha = models.DateField()
     entregado = models.BooleanField()
+
+    class Meta:
+        verbose_name_plural = "Pedidos"
