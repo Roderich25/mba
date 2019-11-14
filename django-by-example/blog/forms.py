@@ -2,6 +2,10 @@ from django import forms
 from .models import Comentario
 
 
+class BuscarForm(forms.Form):
+    palabras = forms.CharField()
+
+
 class EmailPostForm(forms.Form):
     nombre = forms.CharField(max_length=25)
     email = forms.EmailField()

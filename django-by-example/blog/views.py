@@ -1,8 +1,9 @@
 from django.shortcuts import render, get_object_or_404
+from django.contrib.postgres.search import SearchVector
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView
 from .models import Post
-from .forms import EmailPostForm, ComentarioForm
+from .forms import EmailPostForm, ComentarioForm, BuscarForm
 from django.core.mail import send_mail
 from taggit.models import Tag
 from django.db.models import Count
@@ -78,3 +79,22 @@ def post_share(request, post_id):
     else:
         form = EmailPostForm()
     return render(request, 'blog/post/share.html', {'post': post, 'form': form, 'sent': sent})
+
+
+def post_search(request):
+    form = BuscarForm()
+    query = None
+    results = []
+    if 'palabras' in request.GET:
+        form = BuscarForm(request.GET)
+        if form.is_valid():
+            query = form.cleaned_data['palabras']
+            results = Post.objectos.annotate(
+                search=SearchVector('titulo', 'contenido'),
+            ).filter(search=query)
+    return render(request,
+                  'blog/post/search.html',
+                  {'form': form,
+                   'query': query,
+                   'results': results})
+
