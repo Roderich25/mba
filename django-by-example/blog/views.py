@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.contrib.postgres.search import SearchVector
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, TrigramSimilarity
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView
 from .models import Post
@@ -89,12 +89,16 @@ def post_search(request):
         form = BuscarForm(request.GET)
         if form.is_valid():
             query = form.cleaned_data['palabras']
+            search_vector = SearchVector('titulo', weight='A') + SearchVector('contenido', weight='B')
+            search_query = SearchQuery(query)
             results = Post.objectos.annotate(
-                search=SearchVector('titulo', 'contenido'),
-            ).filter(search=query)
+                # search=search_vector,
+                # rank=SearchRank(search_vector, search_query)
+                # ).filter(rank__gte=0.3).order_by('-rank')
+                similarity=TrigramSimilarity('titulo', 'query')
+            ).filter(similarity=0.3).order_by('-similarity')
     return render(request,
                   'blog/post/search.html',
                   {'form': form,
                    'query': query,
                    'results': results})
-
