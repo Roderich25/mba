@@ -24,7 +24,7 @@ SECRET_KEY = 'y54t0)yf(j-*qi8j=w4e9_@(s^cijt2b%oi5wxkqe0$o#x-5%i'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['mysite.com.mx', '127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'social_django',
+    'images.apps.ImagesConfig',
 ]
 
 MIDDLEWARE = [
@@ -121,3 +123,14 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend',
+                           'account.authentication.EmailAuthBackend',
+                           'social_core.backends.google.GoogleOAuth2']
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('GOA2K')
+# Google Consumer Key
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('GOA2S')
+# Google Consumer Secret
+SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = [os.getenv('G2DOM')]
+# Whitelist
