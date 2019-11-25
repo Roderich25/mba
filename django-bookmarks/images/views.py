@@ -1,10 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 from images.forms import ImageCreateForm
 from images.models import Image
+from bookmarks.common.decorators import ajax_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+
+@login_required
+def image_list(request):
+    pass
 
 
 @login_required
@@ -29,6 +36,7 @@ def image_create(request):
     return render(request, 'images/image/create.html', {'section': 'images', 'form': form})
 
 
+@ajax_required
 @login_required
 @require_POST
 def image_like(request):
@@ -45,14 +53,3 @@ def image_like(request):
         except:
             pass
     return JsonResponse({'status': 'ko'})
-
-
-
-
-
-
-
-
-
-
-
