@@ -9,7 +9,7 @@ class Profile(models.Model):
     photo = models.ImageField(upload_to='users/%Y/%m/%d', blank=True)
 
     def __str__(self):
-        return f"{self.user.profile}'s profile"
+        return f"{self.user.username}'s profile"
 
 
 class Contact(models.Model):
