@@ -60,7 +60,7 @@ def process_content():
 
             # chunkGram = r"""Chunk: {<RB.?>*<VB.?>*<NNP>+<NN>?}"""
 
-            chunkGram = r"""Chunk: {<JJ.?><NN.?>}"""
+            chunkGram = r"""Chunk: {<DT>+<JJ.?>+<NN.?>}"""
 
             chunkParser = nltk.RegexpParser(chunkGram)
             chunked = chunkParser.parse(tagged)
@@ -71,6 +71,7 @@ def process_content():
                     temp = []
                     for leaf in tree.leaves():
                         temp.append(leaf[0])
+                    temp[0] = temp[0].lower()
                     print(' '.join(temp))
 
     except Exception as e:
