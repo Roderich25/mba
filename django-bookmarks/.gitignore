@@ -1,5 +1,6 @@
-.idea/
-venv/
+.idea/*
+venv/*
 db.sqlite3
-media/images/
-media/cache/
+media/images/*
+media/cache/*
+media/users/*
