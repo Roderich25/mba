@@ -35,7 +35,7 @@ def speak(audio_string):
 
 def respond(voice_data):
     if 'what is your name' in voice_data:
-        speak('My name is Rod')
+        speak("I don't have a name yet")
     if 'what time is it' in voice_data:
         speak(time.ctime())
     if 'search' in voice_data:
