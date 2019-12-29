@@ -1,7 +1,0 @@
-.idea/
-venv/
-MNIST/
-PetImages/Cats/*
-PetImages/Dogs/*
-PetImages/*
-training_data.npy
