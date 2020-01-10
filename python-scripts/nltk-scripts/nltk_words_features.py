@@ -29,7 +29,13 @@ def find_features(document):
 
 #print(find_features(movie_reviews.words('neg/cv000_29416.txt')))
 
-features_sets = [(find_features(rev), cat) for (rev, cat) in documents]
+feature_sets = [(find_features(rev), cat) for (rev, cat) in documents]
 
-trainning_set  = features_sets[1900:]
-testing_set =  features_sets[:1900]
+trainning_set  = feature_sets[:1900]
+testing_set =  feature_sets[1900:]
+
+# posterior = prior_ocurrences * likelihood / evidence
+ 
+classifier = nltk.NaiveBayesClassifier.train(trainning_set)
+print("NB accuracy", nltk.classify.accuracy(classifier, testing_set))
+print(classifier.show_most_informative_features(10))
