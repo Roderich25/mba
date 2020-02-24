@@ -1,0 +1,14 @@
+{% extends 'blog/base.html' %}
+{% block head %}
+    {{ form.media }}
+{% endblock %}
+{% block content %}
+    <div align="center">
+        <h1>Edit Post</h1>
+        <form method="post" action="">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <p><input type="submit" value="Update"></p>
+        </form>
+    </div>
+{% endblock %}
