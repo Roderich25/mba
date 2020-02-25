@@ -31,7 +31,112 @@ class Client:
         return binascii.hexlify(self._public_key.exportKey(format='DER')).decode('ascii')
 
 
-Rodrigo = Client()
-print(Rodrigo.identity)  # Public Key
+# Rodrigo = Client()
+# print(Rodrigo.identity)  # Public Key
 
-# 30819f300d06092a864886f70d010101050003818d0030818902818100b839b960b9bc8e158df356988b9681321c7d1f295ca1a745e8e70fffafc8141b9e078644dd39f406382ae5cd182238479d7492e0e395d55054b81390fd2cff5eed3c4ffb818c5201430bb4fed835aeead52e2b7d31029993f54276f16fca082b53c3956e1eb946afb56b09a418640449870144ba77d8216dc1a1abe2fe1037fd0203010001
+class Transaction:
+    def __init__(self, sender, recipient, value):
+        self.sender = sender
+        self.recipient = recipient
+        self.value = value
+        self.time = datetime.datetime.now()
+
+    def to_dict(self):
+        if self.sender == "Genesis":
+            identity = "Genesis"
+        else:
+            identity = self.sender.identity
+        return collections.OrderedDict(
+            {'sender': identity, 'recipient': self.recipient, 'value': self.value, 'time': self.time})
+
+    def sign_transaction(self):
+        private_key = self.sender._private_key
+        signer = PKCS1_v1_5.new(private_key)
+        h = SHA.new(str(self.to_dict()).encode('utf8'))
+        return binascii.hexlify(signer.sign(h)).decode('ascii')
+
+
+Renata = Client()
+Pablo = Client()
+Rodrigo = Client()
+Audrey = Client()
+Marshall = Client()
+
+
+def display_transaction(transaction):
+    # for transaction in transactions:
+    dict = transaction.to_dict()
+    print("sender: " + dict['sender'])
+    print('-----')
+    print("recipient: " + dict['recipient'])
+    print('-----')
+    print("value: " + str(dict['value']))
+    print('-----')
+    print("time: " + str(dict['time']))
+    print('-----')
+
+
+transactions = []
+
+t0 = Transaction("Genesis", Pablo.identity, 500)
+# t0.sign_transaction()
+transactions.append(t0)
+
+t1 = Transaction(Pablo, Rodrigo.identity, 100)
+t1.sign_transaction()
+transactions.append(t1)
+
+t1 = Transaction(Pablo, Rodrigo.identity, 100)
+t1.sign_transaction()
+transactions.append(t1)
+
+t2 = Transaction(Rodrigo, Audrey.identity, 10)
+t2.sign_transaction()
+transactions.append(t2)
+
+t3 = Transaction(Rodrigo, Marshall.identity, 10)
+t3.sign_transaction()
+transactions.append(t3)
+
+t4 = Transaction(Marshall, Audrey.identity, 5)
+t4.sign_transaction()
+transactions.append(t4)
+
+# for transaction in transactions:
+#     display_transaction(transaction)
+
+
+class Block:
+    def __init__(self):
+        self.verified_transactions = []
+        self.previous_block_hash = ""
+        self.Nonce = ""
+
+
+last_block_hash = ""
+
+block0 = Block()
+block0.previous_block_hash = None
+Nonce = None
+
+block0.verified_transactions.append(t0)
+block0.verified_transactions.append(t1)
+digest = hash(block0)
+last_block_hash = digest
+
+TPCoins = []
+
+
+def dump_blockchain(self):
+    print("Number of blocks in the chain: " + str(len(self)))
+    for x in range(len(TPCoins)):
+        block_temp = TPCoins[x]
+        print("block # " + str(x))
+    for transaction in block_temp.verified_transactions:
+        display_transaction(transaction)
+        print('---------------------------------\n')
+    print('=====================================')
+
+
+TPCoins.append(block0)
+dump_blockchain(TPCoins)
