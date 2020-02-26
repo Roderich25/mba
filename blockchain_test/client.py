@@ -102,6 +102,7 @@ t4 = Transaction(Marshall, Audrey.identity, 5)
 t4.sign_transaction()
 transactions.append(t4)
 
+
 # for transaction in transactions:
 #     display_transaction(transaction)
 
@@ -140,3 +141,20 @@ def dump_blockchain(self):
 
 TPCoins.append(block0)
 dump_blockchain(TPCoins)
+
+
+def sha256(message):
+    return hashlib.sha256(message.encode('ascii')).hexdigest()
+
+
+def mine(message, difficulty=1):
+    assert difficulty >= 1
+    prefix = '1' * difficulty
+    for i in range(1000):
+        digest = sha256(str(hash(message)) + str(i))
+        if digest.startswith(prefix):
+            print("after " + str(i) + " iterations found nonce: " + digest)
+        return digest
+
+
+print(sha256("Rodrigo"))
