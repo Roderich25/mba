@@ -1,11 +1,18 @@
 const SHA256 = require("crypto-js/sha256");
 
+class Transaction {
+  constructor(fromAddress, toAddress, amount) {
+    this.fromAddress = fromAddress;
+    this.toAddress = toAddress;
+    this.amount = amount;
+  }
+}
+
 class Block {
-  constructor(index, timestamp, data, previousHash = "") {
+  constructor(index, timestamp, transactions, previousHash = "") {
     this.nonce = -1;
-    this.index = index;
     this.timestamp = timestamp;
-    this.data = data;
+    this.transactions = transactions;
     this.previousHash = previousHash;
     this.hash = this.calculateHash();
   }
@@ -34,11 +41,13 @@ class Block {
 class Blockchain {
   constructor() {
     this.chain = [this.createGenesisBlock()];
-    this.difficulty = 5;
+    this.difficulty = 2;
+    this.pendingTransactions = [];
+    this.miningReward = 10;
   }
 
   createGenesisBlock() {
-    return new Block(0, "01/01/2020", "Genesis block", "0");
+    return new Block("01/01/2020", "Genesis block", "0");
   }
 
   getLatestBlock() {
@@ -69,8 +78,7 @@ class Blockchain {
 
 let RodrigoCoin = new Blockchain();
 
-RodrigoCoin.addBlock(new Block(1, "2/1/2020", { amount: 5 }));
-RodrigoCoin.addBlock(new Block(2, "3/1/2020", { amount: 7 }));
-
-console.log(JSON.stringify(RodrigoCoin, null, 4));
-console.log("\nIs this blockchain valid? " + RodrigoCoin.isChainValid() + "\n");
+//RodrigoCoin.addBlock(new Block(1, "2/1/2020", { amount: 5 }));
+//RodrigoCoin.addBlock(new Block(2, "3/1/2020", { amount: 7 }));
+//console.log(JSON.stringify(RodrigoCoin, null, 4));
+//console.log("\nIs this blockchain valid? " + RodrigoCoin.isChainValid() + "\n");
