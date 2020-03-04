@@ -9,7 +9,7 @@ class Transaction {
 }
 
 class Block {
-  constructor(index, timestamp, transactions, previousHash = "") {
+  constructor(timestamp, transactions, previousHash = "") {
     this.nonce = -1;
     this.timestamp = timestamp;
     this.transactions = transactions;
@@ -20,7 +20,6 @@ class Block {
   calculateHash() {
     return SHA256(
       this.nonce +
-        this.index +
         this.previousHash +
         this.timestamp +
         JSON.stringify(this.data)
@@ -41,7 +40,7 @@ class Block {
 class Blockchain {
   constructor() {
     this.chain = [this.createGenesisBlock()];
-    this.difficulty = 2;
+    this.difficulty = 6;
     this.pendingTransactions = [];
     this.miningReward = 10;
   }
@@ -60,6 +59,7 @@ class Blockchain {
 
     console.log("Block sucessfully mined!");
     this.chain.push(block);
+
     this.pendingTransactions = [
       new Transaction(null, miningRewardAddress, this.miningReward)
     ];
@@ -71,6 +71,17 @@ class Blockchain {
 
   getBalanceOfAddress(address) {
     let balance = 0;
+    for (const block of this.chain) {
+      for (const trans of block.transactions) {
+        if (trans.fromAddress === address) {
+          balance -= trans.amount;
+        }
+        if (trans.toAddress === address) {
+          balance += trans.amount;
+        }
+      }
+    }
+    return balance;
   }
 
   addBlock(newBlock) {
@@ -95,8 +106,38 @@ class Blockchain {
   }
 }
 
-let RodrigoCoin = new Blockchain();
+let rodrigoCoin = new Blockchain();
+rodrigoCoin.createTransaction(new Transaction(null, "address1", 100));
+rodrigoCoin.createTransaction(new Transaction(null, "address3", 100));
+rodrigoCoin.createTransaction(new Transaction("address1", "address2", 100));
+rodrigoCoin.createTransaction(new Transaction("address2", "address1", 10));
 
+console.log("\nStarting the miner...\n");
+rodrigoCoin.miningPendingTransactions("miner-address");
+
+console.log(
+  "\nMiner balance:\t",
+  rodrigoCoin.getBalanceOfAddress("miner-address")
+);
+
+rodrigoCoin.createTransaction(new Transaction("address3", "address1", 50));
+rodrigoCoin.createTransaction(new Transaction("address3", "address2", 25));
+
+console.log("\nStarting the miner again ...\n");
+rodrigoCoin.miningPendingTransactions("miner-address");
+
+console.log(
+  "\nMiner balance:\t",
+  rodrigoCoin.getBalanceOfAddress("miner-address")
+);
+console.log(
+  "\nAddress1 balance:\t",
+  rodrigoCoin.getBalanceOfAddress("address1")
+);
+console.log(
+  "\nAddress2 balance:\t",
+  rodrigoCoin.getBalanceOfAddress("address2")
+);
 //RodrigoCoin.addBlock(new Block(1, "2/1/2020", { amount: 5 }));
 //RodrigoCoin.addBlock(new Block(2, "3/1/2020", { amount: 7 }));
 //console.log(JSON.stringify(RodrigoCoin, null, 4));
