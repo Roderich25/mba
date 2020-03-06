@@ -1,38 +1,72 @@
+const EC = require("elliptic").ec;
+const ec = new EC("secp256k1");
 const { Blockchain, Transaction } = require("./blockchain");
+const { KeyGenerator } = require("./keygenerator");
 
+// Blockchain initialization
 let rodrigoCoin = new Blockchain();
-rodrigoCoin.createTransaction(new Transaction(null, "address1", 100));
-rodrigoCoin.createTransaction(new Transaction(null, "address3", 100));
-rodrigoCoin.createTransaction(new Transaction("address1", "address2", 100));
-rodrigoCoin.createTransaction(new Transaction("address2", "address1", 10));
 
-console.log("\nStarting the miner...\n");
-rodrigoCoin.miningPendingTransactions("miner-address");
+// Keys
+pablo = new KeyGenerator();
+renata = new KeyGenerator();
+miner = new KeyGenerator();
 
+// Transactions
+const trans1 = new Transaction(
+  miner.getWalletAddress(),
+  pablo.getWalletAddress(),
+  10
+);
+trans1.signTransaction(miner.key);
+rodrigoCoin.addTransaction(trans1);
+
+const trans2 = new Transaction(
+  miner.getWalletAddress(),
+  renata.getWalletAddress(),
+  10
+);
+trans2.signTransaction(miner.key);
+rodrigoCoin.addTransaction(trans2);
+
+// Mining
+console.log("Starting the miner...");
+rodrigoCoin.miningPendingTransactions(miner.getWalletAddress());
+
+// More transactions
+const trans3 = new Transaction(
+  pablo.getWalletAddress(),
+  renata.getWalletAddress(),
+  5
+);
+trans3.signTransaction(pablo.key);
+rodrigoCoin.addTransaction(trans3);
+
+// Mining
+console.log("Starting the miner...");
+rodrigoCoin.miningPendingTransactions(miner.getWalletAddress());
+
+// Balance
 console.log(
-  "\nMiner balance:\t",
-  rodrigoCoin.getBalanceOfAddress("miner-address")
+  "Pablo balance:\t",
+  rodrigoCoin.getBalanceOfAddress(pablo.getWalletAddress())
+);
+console.log(
+  "Renata balance:\t",
+  rodrigoCoin.getBalanceOfAddress(renata.getWalletAddress())
 );
 
-rodrigoCoin.createTransaction(new Transaction("address3", "address1", 50));
-rodrigoCoin.createTransaction(new Transaction("address3", "address2", 25));
+// Mining
+console.log("Starting the miner...");
+rodrigoCoin.miningPendingTransactions(miner.getWalletAddress());
 
-console.log("\nStarting the miner again ...\n");
-rodrigoCoin.miningPendingTransactions("miner-address");
+// Miner balance
+console.log(
+  "Miner balance:\t",
+  rodrigoCoin.getBalanceOfAddress(miner.getWalletAddress())
+);
 
-console.log(
-  "\nMiner balance:\t",
-  rodrigoCoin.getBalanceOfAddress("miner-address")
-);
-console.log(
-  "\nAddress1 balance:\t",
-  rodrigoCoin.getBalanceOfAddress("address1")
-);
-console.log(
-  "\nAddress2 balance:\t",
-  rodrigoCoin.getBalanceOfAddress("address2")
-);
-//RodrigoCoin.addBlock(new Block(1, "2/1/2020", { amount: 5 }));
-//RodrigoCoin.addBlock(new Block(2, "3/1/2020", { amount: 7 }));
-//console.log(JSON.stringify(RodrigoCoin, null, 4));
-//console.log("\nIs this blockchain valid? " + RodrigoCoin.isChainValid() + "\n");
+// Tampering attemp
+//rodrigoCoin.chain[1].transactions[0].amount = 12345;
+
+// Test
+console.log("Is chain valid?", rodrigoCoin.isChainValid());

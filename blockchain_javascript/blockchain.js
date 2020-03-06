@@ -1,3 +1,5 @@
+const EC = require("elliptic").ec;
+const ec = new EC("secp256k1");
 const SHA256 = require("crypto-js/sha256");
 
 class Transaction {
@@ -5,6 +7,32 @@ class Transaction {
     this.fromAddress = fromAddress;
     this.toAddress = toAddress;
     this.amount = amount;
+  }
+
+  calculateHash() {
+    return SHA256(this.fromAddress + this.toAddress + this.amount).toString();
+  }
+
+  signTransaction(signingKey) {
+    if (signingKey.getPublic("hex") !== this.fromAddress) {
+      throw new Error("You can't sign this transaction!");
+    }
+    const hashedTrans = this.calculateHash();
+    const sig = signingKey.sign(hashedTrans, "base64");
+    this.signature = sig.toDER("hex");
+  }
+
+  isValid() {
+    if (this.fromAddress === null) {
+      return true;
+    }
+
+    if (!this.signature || this.signature.length === 0) {
+      throw Error("No signature found!");
+    }
+
+    const publicKey = ec.keyFromPublic(this.fromAddress, "hex");
+    return publicKey.verify(this.calculateHash(), this.signature);
   }
 }
 
@@ -17,12 +45,21 @@ class Block {
     this.hash = this.calculateHash();
   }
 
+  hasValidTransactions() {
+    for (const trans of this.transactions) {
+      if (!trans.isValid) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   calculateHash() {
     return SHA256(
       this.nonce +
         this.previousHash +
         this.timestamp +
-        JSON.stringify(this.data)
+        JSON.stringify(this.transactions)
     ).toString();
   }
 
@@ -46,7 +83,7 @@ class Blockchain {
   }
 
   createGenesisBlock() {
-    return new Block("01/01/2020", "Genesis block", "0");
+    return new Block("01/01/2020", [], "0");
   }
 
   getLatestBlock() {
@@ -54,18 +91,32 @@ class Blockchain {
   }
 
   miningPendingTransactions(miningRewardAddress) {
-    let block = new Block(Date.now(), this.pendingTransactions);
-    block.mineBlock(this.difficulty);
+    if (this.pendingTransactions.length > 0) {
+      let block = new Block(
+        Date.now(),
+        this.pendingTransactions,
+        this.getLatestBlock().hash
+      );
+      block.mineBlock(this.difficulty);
 
-    console.log("Block sucessfully mined!");
-    this.chain.push(block);
+      console.log("Block sucessfully mined!");
+      this.chain.push(block);
 
-    this.pendingTransactions = [
-      new Transaction(null, miningRewardAddress, this.miningReward)
-    ];
+      this.pendingTransactions = [
+        new Transaction(null, miningRewardAddress, this.miningReward)
+      ];
+    } else {
+      console.log("No transactions to mine!");
+    }
   }
 
-  createTransaction(transaction) {
+  addTransaction(transaction) {
+    if (!transaction.fromAddress || !transaction.toAddress) {
+      throw Error("Error: empty address(es)");
+    }
+    if (!transaction.isValid()) {
+      throw Error("Invalid transaction!");
+    }
     this.pendingTransactions.push(transaction);
   }
 
@@ -84,23 +135,17 @@ class Blockchain {
     return balance;
   }
 
-  /*
-  addBlock(newBlock) {
-    newBlock.previousHash = this.getLatestBlock().hash;
-    //newBlock.hash = newBlock.calculateHash();
-    newBlock.mineBlock(this.difficulty);
-    this.chain.push(newBlock);
-  }
-  */
-
   isChainValid() {
     for (let i = 1; i < this.chain.length; i++) {
       const currentBlock = this.chain[i];
       const previousBlock = this.chain[i - 1];
+      if (!currentBlock.hasValidTransactions()) {
+        return false;
+      }
       if (currentBlock.hash !== currentBlock.calculateHash()) {
         return false;
       }
-      if (currentBlock.previousHash !== previousBlock.calculateHash()) {
+      if (currentBlock.previousHash !== previousBlock.hash) {
         return false;
       }
       return true;

@@ -1,10 +1,18 @@
 const EC = require("elliptic").ec;
 const ec = new EC("secp256k1");
 
-const key = ec.genKeyPair();
-const publicKey = key.getPublic("hex");
-const privateKey = key.getPrivate("hex");
+class KeyGenerator {
+  constructor() {
+    this.key = ec.genKeyPair();
+  }
 
-console.log("\nPrivate key:", privateKey);
-console.log("Public key:", publicKey);
-console.log();
+  getWalletAddress() {
+    return this.key.getPublic("hex");
+  }
+
+  getPrivateKey() {
+    return this.key.getPrivate("hex");
+  }
+}
+
+module.exports.KeyGenerator = KeyGenerator;
