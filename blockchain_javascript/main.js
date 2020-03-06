@@ -1,3 +1,5 @@
+const { Blockchain, Transaction } = require("./blockchain");
+
 let rodrigoCoin = new Blockchain();
 rodrigoCoin.createTransaction(new Transaction(null, "address1", 100));
 rodrigoCoin.createTransaction(new Transaction(null, "address3", 100));
