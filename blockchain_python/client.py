@@ -1,13 +1,6 @@
 # import libraries
 import hashlib
-import random
-import string
-import json
 import binascii
-import numpy as np
-import pandas as pd
-import pylab as pl
-import logging
 import datetime
 import collections
 
@@ -150,11 +143,14 @@ def sha256(message):
 def mine(message, difficulty=1):
     assert difficulty >= 1
     prefix = '1' * difficulty
-    for i in range(1000):
-        digest = sha256(str(hash(message)) + str(i))
+    i = 0
+    while True:
+        i += 1
+        digest = sha256(str(message) + str(i))
         if digest.startswith(prefix):
             print("after " + str(i) + " iterations found nonce: " + digest)
-        return digest
+            return i, digest
 
 
-print(sha256("Rodrigo"))
+print(mine("Rodrigo", 6))
+# 11111187cfc9ff59ab4564de7f9c1d30eaa92b1b16c99537bc96bd90126dbb27
