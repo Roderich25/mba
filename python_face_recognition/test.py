@@ -5,7 +5,7 @@ import cv2
 
 KNOWN_FACES_DIR = 'known_faces'
 UNKNOWN_FACES_DIR = 'unknown_faces'
-TOLERANCE = 0.5
+TOLERANCE = 0.45
 FRAME_THICKNESS = 3
 FONT_THICKNESS = 2
 MODEL = "cnn"  # hog
@@ -28,6 +28,8 @@ for filename in os.listdir(UNKNOWN_FACES_DIR):
     print(filename)
     image = face_recognition.load_image_file(f"{UNKNOWN_FACES_DIR}/{filename}")
     locations = face_recognition.face_locations(image, model=MODEL)
+    # return coordinates of faces in the given image
+    print(f"There are {len(locations)} people in the {filename} image")
     encondings = face_recognition.face_encodings(image, locations)
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
@@ -37,7 +39,8 @@ for filename in os.listdir(UNKNOWN_FACES_DIR):
         match = None
         if True in results:
             match = known_names[results.index(True)]
-            print(f"Macth found: {match} in {filename}")
+
+            print(f"Match found: {match} in {filename}")
             top_left = (face_location[3], face_location[0])
             bottom_right = (face_location[1], face_location[2])
             color = [0, 255, 0]
@@ -50,5 +53,5 @@ for filename in os.listdir(UNKNOWN_FACES_DIR):
             cv2.putText(
                 image, match, (face_location[3]+10, face_location[2]+16), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 50, 50), FONT_THICKNESS)
     cv2.imshow(filename, image)
-    cv2.waitKey(2000)
+    cv2.waitKey(3000)
     cv2.destroyWindow(filename)
