@@ -1,5 +1,4 @@
 // COA-602 Tarea 9 Ejercicio 5
-// Pablo Rodrigo Avila Solis
 // Fecha de creacion: 11-Marzo-2020
 /*********************************************************************************************************************************
 Generalice la estrategia para ordenar tres o cinco números enteros,
