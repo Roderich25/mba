@@ -1,5 +1,4 @@
 // COA-602 Tarea 9 Ejercicio 1
-// Pablo Rodrigo Avila Solis
 // Fecha de creacion: 10-Marzo-2020
 /*********************************************************************************************************************************
 Genere una lista de números enteros de tamaño n, en forma aleatoria, n<=1000. Los números pueden variar entre 0 y 50 pueden estar 

@@ -1,5 +1,4 @@
 // COA-602 Tarea 7 Ejercicio 5
-// Pablo Rodrigo Avila Solis
 // Fecha de creacion: 24-Febrero-2020
 /**************************************************************************************************************************
 Lea una lista de tripletas a, b, c de enteros positivos [1,10] que terminan con una marca de fin de datos (0, 0, 0),
@@ -45,7 +44,7 @@ int main()
     }
 
     resultados(contador_condicion, contador_total, suma_condicion);
-    
+
     return 0;
 }
 

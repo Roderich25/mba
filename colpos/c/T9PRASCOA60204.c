@@ -1,5 +1,4 @@
 // COA-602 Tarea 9 Ejercicio 4
-// Pablo Rodrigo Avila Solis
 // Fecha de creacion: 10-Marzo-2020
 /*********************************************************************************************************************************
 Lea una cadena de caracteres de letras y números,

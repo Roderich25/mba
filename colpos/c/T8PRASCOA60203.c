@@ -1,5 +1,4 @@
 // COA-602 Tarea 8 Ejercicio 3
-// Pablo Rodrigo Avila Solis
 // Fecha de creacion: 5-Marzo-2020
 /*********************************************************************************************************************************
 Se desea sumar y restar números de más de 20 dígitos y menor o igual a 50 dígitos. Los números son proporcionados por el usuario.
@@ -39,7 +38,7 @@ void ingresar_digitos(int d[])
     i = 0;
     while (i < SIZE)
     {
-        printf("\tDigito %d:\t", i+1);
+        printf("\tDigito %d:\t", i + 1);
         scanf("%d", &temp[i]);
         if (temp[i] == -1)
             break;
@@ -81,7 +80,7 @@ void suma(int a[], int b[])
 
 void compara_resta(int a[], int b[])
 {
-    int i, mayor = 1, signo=1;
+    int i, mayor = 1, signo = 1;
     for (i = SIZE - 1; i >= 0; i--)
     {
         if (b[i] != a[i])
@@ -158,6 +157,7 @@ void imprimir(int c[], int signo)
             bandera = 1;
         }
     }
-    if(bandera==-1) printf("%d", 0);
+    if (bandera == -1)
+        printf("%d", 0);
     printf("\n");
 }

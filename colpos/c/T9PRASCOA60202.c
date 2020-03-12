@@ -1,5 +1,4 @@
 // COA-602 Tarea 9 Ejercicio 2
-// Pablo Rodrigo Avila Solis
 // Fecha de creacion: 10-Marzo-2020
 /*********************************************************************************************************************************
 Genere una lista de enteros de tamaño n<20. Los números pueden estar repetidos más de una vez y en desorden.

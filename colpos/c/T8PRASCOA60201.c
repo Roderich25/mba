@@ -1,5 +1,4 @@
 // COA-602 Tarea 8 Ejercicio 1
-// Pablo Rodrigo Avila Solis
 // Fecha de creacion: 5-Marzo-2020
 /*******************************************************************************************************************************
 Realice una validacion de la entrada del numero de hileras (hil) y numero de columnas (col) de un patron rectangular de numeros,

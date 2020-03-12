@@ -1,5 +1,4 @@
 // COA-602 Tarea 7 Ejercicio 3
-// Pablo Rodrigo Avila Solis
 // Fecha de creacion: 24-Febrero-2020
 /*************************************************************************************************************************************
 Calcule el valor aproximado de la funcion logaritmo natural, utilice una aproximacion en serie. Lea el numero x y la epsilon deseada.
@@ -29,7 +28,7 @@ int main()
     // Salida
     printf("Log propia\tLog de C\n");
     printf("%lf\t%lf\n", logaritmo_natural(a, i), log(a));
-    
+
     return 0;
 }
 

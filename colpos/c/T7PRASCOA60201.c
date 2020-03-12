@@ -1,5 +1,4 @@
 // COA-602 Tarea 7 Ejercicio 1
-// Pablo Rodrigo Avila Solis
 // Fecha de creacion: 24-Febrero-2020
 /****************************************************************************************************************************
 Plantee una solución iterativa para calcular el factorial de un numero n. Utilice variables de double precision.

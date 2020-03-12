@@ -1,7 +1,6 @@
 // COA-602 Tarea 5 Ejercicio 1
-// Pablo Rodrigo Avila Solis
 /******************************************************************************************************************
-Elabore un programa que despliegue un menuÅ de opciones para imprimir cada uno de los cuatro patrones de simbolos @.
+Elabore un programa que despliegue un menuÔøΩ de opciones para imprimir cada uno de los cuatro patrones de simbolos @.
 Lea el numero de hileras y columnas (maximo 15), luego elija el patron, e imprima el patron deseado.
 Pregunte al usuario si desea continuar con la impresion de patrones, de otra forma,
 termine la ejecucion del programa. Por ejemplo, para m=3 y n=3, las posibles opciones son:

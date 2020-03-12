@@ -1,5 +1,4 @@
 // COA-602 Tarea 6 Ejercicio 3
-// Pablo Rodrigo Avila Solis
 // Fecha de creacion: 20-Febrero-2020
 /***************************************************************************************************************************************
 Determine por aproximaciones sucesivas, el area de una curva definida por una funcion y = f(x) = x*x, definida en el intervalo [a,b]

@@ -1,5 +1,4 @@
 // COA-602 Tarea 6 Ejercicio 4
-// Pablo Rodrigo Avila Solis
 // Fecha de creacion: 20-Febrero-2020
 /***************************************************************************************************************************************
 Modifique el programa para jugar con dos dados visto en clase, para jugar contra la maquina. Lea el nombre del usuario, elija el turno

@@ -1,5 +1,4 @@
 // COA-602 Tarea 6 Ejercicio 1
-// Pablo Rodrigo Avila Solis
 // Fecha de creacion: 20-Febrero-2020
 /*************************************************************************************************************************************
 Utilice al menos tres funciones (entrada, proceso, impresion) para resolver el problema de la raiz cuadrada por el metodo de Newton,
@@ -35,7 +34,7 @@ int main()
 double entrada(void)
 {
     double a;
-    printf("\n¿Raiz cuadrada (aproximada) de?\t");
+    printf("\nï¿½Raiz cuadrada (aproximada) de?\t");
     scanf("%lf", &a);
     return a;
 }

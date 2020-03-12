@@ -1,5 +1,4 @@
 // COA-602 Tarea 5 Ejercicio 2
-// Pablo Rodrigo Avila Solis
 /**************************************************************************************************************
 Lea 5 enteros positivos diferentes (n1, n2, n3, n4, n5) luego, identifique cual de ellos representa la mediana.
 Utilice el concepto de marca y la estrategia para identificar maximos.

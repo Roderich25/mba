@@ -1,8 +1,6 @@
 // COA-602 Examen 1
-// Pablo Rodrigo Avila Solis
 // Fecha de creacion: 20-Febrero-2020
 /*****************************************************************************************************************************************************************
-
 Suponga que una pelota se suelta a una altura inicial, alt_0, después de un nummero de rebotes, n_rebotes, cae por debajo de una altura limite alt_limite.
 En cada rebote la pelota pierde altura, si el número de rebote es par, la pelota pierde 5% de su altura anterior, de otra forma, pierde 3% de su altura anterior.
 Lea alt_limite, y n_rebotes deseados; luego, determine por aproximaciones, a que altura inicial debe soltarse la pelota, para caer por debajo de alt_limite.

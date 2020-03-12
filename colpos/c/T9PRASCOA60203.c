@@ -1,5 +1,4 @@
 // COA-602 Tarea 9 Ejercicio 3
-// Pablo Rodrigo Avila Solis
 // Fecha de creacion: 10-Marzo-2020
 /*********************************************************************************************************************************
 Lea una lista de salarios entre 5000 y 20000 de tamaño n < 30.

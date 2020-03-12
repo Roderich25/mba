@@ -1,5 +1,4 @@
 // COA-602 Tarea 8 Ejercicio 2
-// Pablo Rodrigo Avila Solis
 // Fecha de creacion: 5-Marzo-2020
 /****************************************************************************************************************************
 Genere una lista de tamaño n, de numeros enteros en el rango 1-20, en forma aleatoria n<=100.

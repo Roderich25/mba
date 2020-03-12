@@ -1,5 +1,4 @@
 // COA-602 Tarea 7 Ejercicio 2
-// Pablo Rodrigo Avila Solis
 // Fecha de creacion: 24-Febrero-2020
 /**********************************************************************************************************************************
 Plantee una solución iterativa para calcular los termino de la sucesión de Fibonacci, lea el n-esimo termino deseado. Utilice
@@ -28,7 +27,7 @@ int main()
         printf("Si desea continuar calculando Fibonacci presione [0], si desea salir presione [1]:\t");
         scanf("%d", &fin);
     } while (!fin);
-    
+
     return 0;
 }
 
@@ -73,6 +72,6 @@ void cuadro_comparativo(int n)
     printf("\tFibonacci de:\t\tIterativo:\t\tRecursivo:\n");
     for (i = 0; i <= n; i++)
     {
-        printf("\t%9d\t\t%20ld\t\t%20ld\n", i, fibonacci_iterativo(i), fibonacci_recursivo(i)); 
+        printf("\t%9d\t\t%20ld\t\t%20ld\n", i, fibonacci_iterativo(i), fibonacci_recursivo(i));
     }
 }

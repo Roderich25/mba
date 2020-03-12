@@ -1,5 +1,4 @@
 // COA-602 Tarea 7 Ejercicio 4
-// Pablo Rodrigo Avila Solis
 // Fecha de creacion: 24-Febrero-2020
 /**************************************************************************************************************************
 Lea un numero entero positivo x, de maximo dos digitos. Aplicando la definicion de la funcion raíz cuadrada z = f(x) = √x.
@@ -34,7 +33,7 @@ int main()
     // Salida
     printf("\nx\tsqrt aprox\tsqrt verdadera\terror relativo\n");
     printf("%d\t%.4lf\t\t%.4lf\t\t%.8lf\n\n", x, z, z1, error_relativo);
-    
+
     return 0;
 }
 

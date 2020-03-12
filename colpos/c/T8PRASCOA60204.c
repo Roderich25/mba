@@ -1,5 +1,4 @@
 // COA-602 Tarea 8 Ejercicio 4
-// Pablo Rodrigo Avila Solis
 // Fecha de creacion: 5-Marzo-2020
 /****************************************************************************************************************************
 Defina un arreglo de enteros de tamano maximo 100. Luego lea una lista de calificaciones entre 1 y 10.

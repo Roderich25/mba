@@ -1,5 +1,4 @@
 // COA-602 Tarea 5 Ejercicio 4
-// Pablo Rodrigo Avila Solis
 /******************************************************************************************************
 Lea dos numeros num1 y num2 (digito por digito) de longitud lon1 y lon2, respectivamente.
 La longitud de cada numero debe estar entre 1 y 5 digitos.
@@ -57,7 +56,7 @@ int main()
 
     if (operacion == 1)
     {
-    	printf("\t %d%d%d%d%d\n", d5, d4, d3, d2, d1);
+        printf("\t %d%d%d%d%d\n", d5, d4, d3, d2, d1);
         printf("\t+%d%d%d%d%d\n", e5, e4, e3, e2, e1);
         f1 = e1 + d1;
         if (f1 > 9)
@@ -89,7 +88,7 @@ int main()
     {
         if (operacion == 2)
         {
-        	printf("\t %d%d%d%d%d\n", d5, d4, d3, d2, d1);
+            printf("\t %d%d%d%d%d\n", d5, d4, d3, d2, d1);
             printf("\t-%d%d%d%d%d\n", e5, e4, e3, e2, e1);
             if (d5 != e5)
             {

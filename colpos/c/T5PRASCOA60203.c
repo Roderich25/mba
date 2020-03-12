@@ -1,8 +1,5 @@
-
 // COA-602 Tarea 5 Ejercicio 3
-// Pablo Rodrigo Avila Solis
 // Fecha de modificacion: 18-Feb-2020 (Ya funciona para intervalos negativos!)
-
 /******************************************************************************************************
 Determine por aproximaciones sucesivas, la longitud L de una curva definida por una funcion
 y =f(x) = x*x. definida en el intervalo [a,b] de la recta numérica. Por ejemplo, x en [0, 5].
