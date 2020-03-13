@@ -11,12 +11,18 @@ class FMR:
         self.lista = list(map(fun, self.lista))
         return self
 
-    def reduce(self, fun, start=None):
-        pass
+    def reduce(self, fun, value=0):
+        if not self.lista:
+            return value
+        else:
+            for el in self.lista:
+                value = fun(value, el)
+                self.lista.remove(el)
+                return self.reduce(fun, value)
 
     def __repr__(self):
         return str(self.lista)
 
 
 abc = FMR([1, 2, 3, 4])
-print(abc.map(lambda x: x*x).map(lambda x: x*x))
+print(abc.map(lambda x: x*x).reduce(lambda x, y: x+y))
