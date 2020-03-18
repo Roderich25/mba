@@ -1,15 +1,29 @@
 #!/usr/bin/env python3
-letters = ['a', 'b', 'c', 'd', 'e']
+letters = ["a", "b", "c", "d", "e"]
 
 
-def permutations(letters, cadena=""):
+def permutations(letters, string=""):
     if not letters:
-        print(cadena)
+        print(string)
     else:
-        for i in letters:
+        for l in letters:
             available = letters.copy()
-            available.remove(i)
-            permutations(available, cadena+str(i))
+            available.remove(l)
+            permutations(available, string + str(l))
 
 
-permutations(letters)
+# print("Permutations")
+# permutations(letters)
+
+
+def combinations(n, m, letters, string=""):
+    for l in range(0, len(letters)):
+        if n == 1:
+            print(string + letters[l])
+        elif l <= m - n:
+            combinations(n - 1, 5, letters[l + 1 : m + 1], string + letters[l])
+
+
+print("Combinations")
+combinations(2, 5, letters)
+
