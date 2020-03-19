@@ -22,10 +22,11 @@ int main()
     int B[NMAX][NMAX] = {{0}};
     int C[NMAX][NMAX] = {{0}};
 
-    printf("\t'Operaciones con matrices'\n\tSi desea sumar presione [s], si desea restar [r], o [m] para multiplicar por un escalar:\n\t>");
+    printf("\t'Operaciones con matrices'\n\tSi desea sumar presione [s], si desea restar [r], o [m] para multiplicar por un escalar:\n\t> ");
     scanf("%c", &operacion);
 
-    if(operacion=='m'){
+    if (operacion == 'm')
+    {
         printf("\nIngresar escalar:\t");
         scanf("%d", &A[0][0]);
         printf("\nIngresar tamaño de la matriz cuadrada:\t");
@@ -33,7 +34,9 @@ int main()
         f1(B, n);
         f3(A, B, C, n);
         f4(operacion, A, B, C, n);
-    }else{
+    }
+    else
+    {
         printf("\nIngresar tamaño de matrices cuadradas:\t");
         scanf("%d", &n);
         f1(A, n);
@@ -42,7 +45,6 @@ int main()
         f4(operacion, A, B, C, n);
     }
 
-    
     return 0;
 }
 
