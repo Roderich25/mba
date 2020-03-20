@@ -53,5 +53,6 @@ int main()
     }
     printf("La altura inicial necesaria es: %lf\n", alt_aprox);
     printf("Aproximacion lograda despues de %d intentos de altura inicial.\n\n", contador);
+
     return 0;
 }
