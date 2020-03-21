@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-letters = ["a", "b", "c", "d"]
+letters = ["a", "b", "c", "d", "e"]
 
 
 def permutations(letters, string=""):
@@ -20,9 +20,10 @@ def combinations(n, m, letters, string=""):
     for l in range(0, len(letters)):
         if n == 1:
             print(string + letters[l])
-        elif l <= m - n:
-            combinations(n - 1, 5, letters[l + 1 : m + 1], string + letters[l])
+        else:
+            if l <= m - n:
+                combinations(n - 1, m, letters[l + 1 : m + 1], string + letters[l])
 
 
 print("\nCombinations:")
-combinations(3, 4, letters)
+combinations(4, 5, letters)
