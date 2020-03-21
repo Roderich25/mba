@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-letters = ["a", "b", "c", "d", "e"]
+letters = ["a", "b", "c", "d"]
 
 
 def permutations(letters, string=""):
@@ -12,8 +12,8 @@ def permutations(letters, string=""):
             permutations(available, string + str(l))
 
 
-# print("Permutations")
-# permutations(letters)
+print("\nPermutations:")
+permutations(letters)
 
 
 def combinations(n, m, letters, string=""):
@@ -24,5 +24,5 @@ def combinations(n, m, letters, string=""):
             combinations(n - 1, 5, letters[l + 1 : m + 1], string + letters[l])
 
 
-print("Combinations")
-combinations(2, 5, letters)
+print("\nCombinations:")
+combinations(3, 4, letters)
