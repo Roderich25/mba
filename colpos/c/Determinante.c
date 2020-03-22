@@ -22,7 +22,7 @@ int cofactor_matriz(int mat[][NMAX], int m)
 
 void matriz_reducida(int mat[][NMAX], int temp[][NMAX], int m)
 {
-    int i, j, k = 0, marca = 0;
+    int i, j, k = 0;
     int local[NMAX][NMAX] = {0};
 
     for (i = 0; i < NMAX; i++)
