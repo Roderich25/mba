@@ -1,13 +1,12 @@
-import sys
 import numpy as np
-import matplotlib
+import nnfs
+from nnfs.datasets import spiral_data
 
-np.random.seed(0)
-# print("Python:", sys.version)
-# print("Numpy:", np.__version__)
-# print("Matplotlib:", matplotlib.__version__)
+nnfs.init()
+X, y = spiral_data(100, 3)
 
-X = np.array([[1, 2, 3, 2.5], [2.0, 5.0, -1.0, 2.0], [-1.5, 2.7, 3.3, -0.8]])
+# print(X)
+# print(y)
 
 
 class Layer_Dense:
@@ -24,9 +23,13 @@ class Activation_ReLu:
         self.output = np.maximum(0, inputs)
 
 
-layer1 = Layer_Dense(4, 50)
-layer2 = Layer_Dense(50, 2)
+layer1 = Layer_Dense(2, 50)
+activation1 = Activation_ReLu()
 
 layer1.forward(X)
-layer2.forward(layer1.output)
-print(layer2.output)
+# print(layer1.output)
+# print(layer1.output.shape)
+
+activation1.forward(layer1.output)
+print(activation1.output)
+print(activation1.output.shape)
