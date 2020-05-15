@@ -1,21 +1,32 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import HttpResponse
+from django.views.generic import View
 
 
-def home(request):
-    return HttpResponse("Home")
+class MyHomeView(View):
+
+    def get(self, request, *args, **kargs):
+        return HttpResponse("Home Sweet Home")
 
 
-def servicios(request):
-    return HttpResponse("Servicios")
+class ServiciosView(View):
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse("Servicios")
 
 
-def blog(request):
-    return HttpResponse("Blog")
+class BlogView(View):
+
+    def get(self, request, *args, **kargs):
+        return HttpResponse("Blog")
 
 
-def tienda(request):
-    return HttpResponse("Tienda")
+class TiendaView(View):
+
+    def get(self, request, *args, **kargs):
+        return HttpResponse("Tienda")
 
 
-def contacto(request):
-    return HttpResponse("Contacto")
+class ContactoView(View):
+
+    def get(self, request, *args, **kargs):
+        return HttpResponse("Contacto")
