@@ -1,32 +1,21 @@
-from django.shortcuts import HttpResponse
-from django.views.generic import View
+from django.views.generic import TemplateView
 
 
-class MyHomeView(View):
-
-    def get(self, request, *args, **kargs):
-        return HttpResponse("Home Sweet Home")
+class MyHomeView(TemplateView):
+    template_name = 'ProyectoWebApp/home.html'
 
 
-class ServiciosView(View):
-
-    def get(self, request, *args, **kwargs):
-        return HttpResponse("Servicios")
+class ServiciosView(TemplateView):
+    template_name = 'ProyectoWebApp/servicios.html'
 
 
-class BlogView(View):
-
-    def get(self, request, *args, **kargs):
-        return HttpResponse("Blog")
+class BlogView(TemplateView):
+    template_name = 'ProyectoWebApp/blog.html'
 
 
-class TiendaView(View):
-
-    def get(self, request, *args, **kargs):
-        return HttpResponse("Tienda")
+class TiendaView(TemplateView):
+    template_name = 'ProyectoWebApp/tienda.html'
 
 
-class ContactoView(View):
-
-    def get(self, request, *args, **kargs):
-        return HttpResponse("Contacto")
+class ContactoView(TemplateView):
+    template_name = 'ProyectoWebApp/contacto.html'
