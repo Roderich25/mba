@@ -21,8 +21,9 @@ class Sentence:
         #    yield word
         # return
 
-        for match in RE_WORD.finditer(self.text):
-            yield match.group()
+        # for match in RE_WORD.finditer(self.text):
+        #    yield match.group()
+        return (match.group() for match in RE_WORD.finditer(self.text))
 
 
 class SentenceIterador:
