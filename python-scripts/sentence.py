@@ -15,7 +15,10 @@ class Sentence:
         return f'Sentence({reprlib.repr(self.text)})'
 
     def __iter__(self):
-        return SentenceIterador(self.words)
+        # return SentenceIterador(self.words)
+        for word in self.words:
+            yield word
+        return
 
 
 class SentenceIterador:
@@ -39,13 +42,11 @@ class SentenceIterador:
 s = Sentence("Alpha Bravo Charlie Delta Echo Foxtrot")
 print(s.words)
 print(s)
-
+print(list(s))
 
 for w in s:
     print(w)
 
-# print(list(s))
 
 print(issubclass(SentenceIterador, abc.Iterator))
 print(isinstance(s, abc.Iterable))
-#
