@@ -9,16 +9,20 @@ class Sentence:
 
     def __init__(self, text):
         self.text = text
-        self.words = RE_WORD.findall(text)
+        # self.words = RE_WORD.findall(text)
 
     def __repr__(self):
         return f'Sentence({reprlib.repr(self.text)})'
 
     def __iter__(self):
         # return SentenceIterador(self.words)
-        for word in self.words:
-            yield word
-        return
+
+        # for word in self.words:
+        #    yield word
+        # return
+
+        for match in RE_WORD.finditer(self.text):
+            yield match.group()
 
 
 class SentenceIterador:
@@ -40,7 +44,7 @@ class SentenceIterador:
 
 
 s = Sentence("Alpha Bravo Charlie Delta Echo Foxtrot")
-print(s.words)
+# print(s.words)
 print(s)
 print(list(s))
 
