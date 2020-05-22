@@ -32,6 +32,9 @@ class SentenceIterador:
         self.index += 1
         return word
 
+    def __iter__(self):
+        return self
+
 
 s = Sentence("Alpha Bravo Charlie Delta Echo Foxtrot")
 print(s.words)
