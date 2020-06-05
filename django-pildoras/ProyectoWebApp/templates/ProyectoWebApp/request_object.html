@@ -1,0 +1,32 @@
+{% extends 'ProyectoWebApp/base.html' %}
+{% load static %}
+    <!-- Contenido -->
+{% block content%}
+    <div align="center">
+        <h1 style="color:white;">Request Object</h1>
+            <h2 style="color:white;"><span style="font-weight:bold">Resolver Match</span>: {{request.resolver_match}}</h2>
+            <h2 style="color:white;"><span style="font-weight:bold">Current App</span>: {{request.curent_app}}</h2>
+            <h2 style="color:white;"><span style="font-weight:bold">urlconf</span>: {{request.urlcoºnf}}</h2>
+            <h2 style="color:white;"><span style="font-weight:bold">Site Match</span>: {{request.site}}</h2>
+            <h2 style="color:white;"><span style="font-weight:bold">Session</span>: {{request.session}}</h2>
+            <h2 style="color:white;"><span style="font-weight:bold">get_host()</span>: {{request.get_host}}</h2>
+            <h2 style="color:white;"><span style="font-weight:bold">get_port()</span>: {{request.get_port}}</h2>
+            <h2 style="color:white;"><span style="font-weight:bold">Path</span>: {{request.path}}</h2>
+            <h2 style="color:white;"><span style="font-weight:bold">Full Path</span>: {{request.get_full_path}}</h2>
+            <h2 style="color:white;"><span style="font-weight:bold">Scheme</span>: {{request.scheme}}</h2>
+            <h2 style="color:white;"><span style="font-weight:bold">Body</span>: {{request.body}}</h2>
+            <h2 style="color:white;"><span style="font-weight:bold">Path Info</span>: {{request.path_info}}</h2>
+            <h2 style="color:white;"><span style="font-weight:bold">Method</span>: {{request.method}}</h2>
+            <h2 style="color:white;"><span style="font-weight:bold">Encoding</span>: {{request.encoding}}</h2>
+            <h2 style="color:white;"><span style="font-weight:bold">Content Type</span>: {{request.content_type}}</h2>
+            <h2 style="color:white;"><span style="font-weight:bold">Content Params</span>: {{request.content_params}}</h2>
+            <h2 style="color:white;"><span style="font-weight:bold">GET</span>: {{request.GET}}</h2>
+            <h2 style="color:white;"><span style="font-weight:bold">POST</span>: {{request.POST}}</h2>
+            <h2 style="color:white;"><span style="font-weight:bold">COOKIES</span>: {{request.COOKIES}}</h2>
+            <h2 style="color:white;"><span style="font-weight:bold">FILES</span>: {{request.FILES}}</h2>
+            <p></p>
+            <h2 style="color:white;"><span style="font-weight:bold">META</span>: {{request.META}}</h2>
+            <p></p>
+            <h2 style="color:white;"><span style="font-weight:bold">headers</span>: {{request.headers}}</h2>
+    </div>
+{% endblock %}

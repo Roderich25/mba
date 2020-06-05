@@ -19,3 +19,7 @@ class TiendaView(TemplateView):
 
 class ContactoView(TemplateView):
     template_name = 'ProyectoWebApp/contacto.html'
+
+
+class RequestObjectView(TemplateView):
+    template_name = 'ProyectoWebApp/request_object.html'
