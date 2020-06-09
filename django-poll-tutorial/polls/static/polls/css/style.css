@@ -1,0 +1,6 @@
+body {
+    background: white url("../images/dev.gif") no-repeat;
+}
+div li a {
+    color: green;
+}
