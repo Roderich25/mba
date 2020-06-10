@@ -8,6 +8,11 @@ class ChoiceInLine(admin.TabularInline):
 
 
 class QuestionAdmin(admin.ModelAdmin):
+    list_display = ['question_text', 'pub_date', 'was_published_recently']
+    list_filter = ['pub_date']
+    list_per_page = 50
+    date_hierarchy = 'pub_date'
+    search_fields = ['question_text__istartswith']
     fieldsets = [
         ('Date of publication', {'fields': ['pub_date']}),
         ('Question', {'fields': ['question_text']}),
