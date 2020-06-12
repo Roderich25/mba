@@ -27,7 +27,7 @@ const CustomLayout = (props) => {
           className="site-layout-background"
           style={{ background: "#fff", padding: 24, minHeight: 380 }}
         >
-          Content
+          {props.children}
         </div>
       </Content>
       <Footer style={{ textAlign: "center" }}>
