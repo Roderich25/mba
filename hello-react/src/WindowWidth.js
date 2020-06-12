@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 
-function AppThree() {
+function WindowWidth() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const handleWindowResize = () => setWindowWidth(window.innerWidth);
@@ -14,4 +14,4 @@ function AppThree() {
   );
 }
 
-export default AppThree;
+export default WindowWidth;

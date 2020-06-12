@@ -2,9 +2,19 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
-import AppTwo from "./AppTwo";
-import AppThree from "./AppThree";
+import PostsUsersComments from "./PostsUsersComments";
+import WindowWidth from "./WindowWidth";
+import Phrases from "./Phrases.js";
+import Github from "./Github.js";
 
-ReactDOM.render(<App />, document.getElementById("root2"));
-ReactDOM.render(<AppTwo />, document.getElementById("root3"));
-ReactDOM.render(<AppThree />, document.getElementById("root"));
+ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(
+  <PostsUsersComments />,
+  document.getElementById("posts-users-comments")
+);
+ReactDOM.render(<WindowWidth />, document.getElementById("window-width"));
+ReactDOM.render(<Phrases />, document.getElementById("phrases"));
+ReactDOM.render(
+  <Github user="roderich25" />,
+  document.getElementById("github")
+);

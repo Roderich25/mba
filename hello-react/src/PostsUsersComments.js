@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 
-function AppTwo() {
+function PostsUsersComments() {
   const [resource, setResource] = useState("posts");
   const [items, setItems] = useState([]);
 
@@ -27,4 +27,4 @@ function AppTwo() {
   );
 }
 
-export default AppTwo;
+export default PostsUsersComments;
