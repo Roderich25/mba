@@ -7,6 +7,7 @@ class ChoiceInLine(admin.TabularInline):
     extra = 1
 
 
+@admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ['question_text', 'pub_date', 'was_published_recently']
     list_filter = ['pub_date']
@@ -20,5 +21,5 @@ class QuestionAdmin(admin.ModelAdmin):
     inlines = [ChoiceInLine]
 
 
-admin.site.register(Question, QuestionAdmin)
+# admin.site.register(Question, QuestionAdmin)
 # admin.site.register(Choice)
