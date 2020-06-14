@@ -9,9 +9,9 @@ class ChoiceInLine(admin.TabularInline):
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ['pub_date', 'question_text', 'was_published_recently']
-    list_editable = ['question_text']
-    list_filter = ['pub_date']
+    list_display = ['pub_date', 'question_text', 'was_published_recently', 'active']
+    list_editable = ['question_text', 'active']
+    list_filter = ['active', 'pub_date']
     list_per_page = 50
     date_hierarchy = 'pub_date'
     search_fields = ['question_text__istartswith']
