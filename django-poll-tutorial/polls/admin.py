@@ -3,7 +3,7 @@ from .models import Choice, Question
 from django.utils import timezone
 
 
-class ChoiceInLine(admin.TabularInline):
+class ChoiceInLine(admin.StackedInline):
     model = Choice
     extra = 1
 
@@ -25,10 +25,13 @@ class QuestionAdmin(admin.ModelAdmin):
     date_hierarchy = 'pub_date'
     search_fields = ['question_text__istartswith']
     fieldsets = [
-        ('Date of publication', {'fields': ['pub_date']}),
+        ('None', {'fields':['active']}),
+        ('Date of publication', {'classes': ('collapse',), 'fields': ['pub_date']}),
         ('Question', {'fields': ['question_text']}),
     ]
     inlines = [ChoiceInLine]
+    save_on_top = True
+    # radio_fields = {'active': admin.VERTICAL}
 
 # admin.site.register(Question, QuestionAdmin)
 # admin.site.register(Choice)
