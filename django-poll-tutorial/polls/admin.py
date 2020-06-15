@@ -5,7 +5,7 @@ from django.utils import timezone
 
 class ChoiceInLine(admin.StackedInline):
     model = Choice
-    extra = 1
+    extra = 2
 
 
 def created_now(modeladmin, requets, queryset):
@@ -25,7 +25,7 @@ class QuestionAdmin(admin.ModelAdmin):
     date_hierarchy = 'pub_date'
     search_fields = ['question_text__istartswith']
     fieldsets = [
-        ('None', {'fields':['active']}),
+        ('None', {'fields': ['active']}),
         ('Date of publication', {'classes': ('collapse',), 'fields': ['pub_date']}),
         ('Question', {'fields': ['question_text']}),
     ]
@@ -33,5 +33,5 @@ class QuestionAdmin(admin.ModelAdmin):
     save_on_top = True
     # radio_fields = {'active': admin.VERTICAL}
 
+
 # admin.site.register(Question, QuestionAdmin)
-# admin.site.register(Choice)
