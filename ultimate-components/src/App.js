@@ -1,13 +1,11 @@
 import React from "react";
-import Counter from "./Counter";
-import Random from "./Random";
+import "./machine.css";
+import UltimateMachine from "./UltimateMachine";
 
 const App = () => (
-  <div align="center">
-    <h1>Hello World!</h1>
-    <Counter />
-    <Random />
-  </div>
+  <main>
+    <UltimateMachine />
+  </main>
 );
 
 export default App;
