@@ -1,11 +1,13 @@
 import React from "react";
 import "./machine.css";
-import UltimateHolidayList from "./UltimateHolidayList";
+import StopWatch from "./StopWatch";
 
-const App = () => (
-  <main>
-    <UltimateHolidayList />
-  </main>
-);
+const App = () => {
+  return (
+    <main>
+      <StopWatch />
+    </main>
+  );
+};
 
 export default App;
