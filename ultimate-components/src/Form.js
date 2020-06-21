@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, Fragment, useEffect } from "react";
 
 const initialState = {
   firstName: "",
@@ -9,10 +9,47 @@ const initialState = {
   breakfast: false,
   lunch: false,
   dinner: false,
+  shirtSize: "",
 };
 
-const Form = () => {
+const loadState = {
+  firstName: "Rodrigo",
+  lastName: "Avila",
+  biography: "I'm a developer",
+  transport: "planes",
+  agree: true,
+  breakfast: false,
+  lunch: true,
+  dinner: false,
+  shirtSize: "M",
+};
+
+const FormContainer = () => {
+  const [data, setData] = useState(initialState);
+  const onSubmitHandler = (formState) => {
+    console.log(formState);
+  };
+
+  const onClickHandler = () => {
+    setData(loadState);
+  };
+
+  return (
+    <Fragment>
+      <Form onSubmit={onSubmitHandler} data={data} />{" "}
+      <button type="button" onClick={onClickHandler}>
+        Load data
+      </button>
+    </Fragment>
+  );
+};
+
+const Form = ({ onSubmit, data }) => {
   const [formState, setFormState] = useState(initialState);
+
+  useEffect(() => {
+    setFormState(data);
+  }, [data]);
 
   const onChangeHandler = (e) => {
     const value =
@@ -20,13 +57,13 @@ const Form = () => {
     setFormState({ ...formState, [e.target.name]: value });
   };
 
-  const onSubmitHandler = (e) => {
-    e.preventDefault();
-    console.log(formState);
+  const onClickHandler = () => {
+    setFormState(loadState);
   };
 
-  const onClickHandler = () => {
-    setFormState(initialState);
+  const onSubmitHandler = (e) => {
+    e.preventDefault();
+    onSubmit(formState);
   };
 
   return (
@@ -94,6 +131,36 @@ const Form = () => {
         />
         <label htmlFor="dinner">Dinner</label>
       </fieldset>
+      <fieldset>
+        <legend>T-Shirt size</legend>
+        <input
+          type="radio"
+          id="sizeS"
+          name="shirtSize"
+          value="S"
+          onChange={onChangeHandler}
+          checked={formState.shirtSize === "S"}
+        />
+        <label htmlFor="sizeS">Small</label>
+        <input
+          type="radio"
+          id="sizeM"
+          name="shirtSize"
+          value="M"
+          onChange={onChangeHandler}
+          checked={formState.shirtSize === "M"}
+        />
+        <label htmlFor="sizeM">Medium</label>
+        <input
+          type="radio"
+          id="sizeL"
+          name="shirtSize"
+          value="L"
+          onChange={onChangeHandler}
+          checked={formState.shirtSize === "L"}
+        />
+        <label htmlFor="sizeL">Large</label>
+      </fieldset>
       <label htmlFor="agree">Agree?</label>
       <input
         type="checkbox"
@@ -103,11 +170,8 @@ const Form = () => {
         checked={formState.agree}
       />
       <button type="submit">Save</button>
-      <button type="button" onClick={onClickHandler}>
-        Clear
-      </button>
     </form>
   );
 };
 
-export default Form;
+export default FormContainer;
