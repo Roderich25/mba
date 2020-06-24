@@ -19,7 +19,7 @@ search = browser.find_element_by_id("search-input")
 search.send_keys("Raúl Jiménez")
 search_go = browser.find_element_by_class_name("searchIconContainer.searchCommit")
 search_go.click()
-time.sleep(1)
+time.sleep(3)
 raul_jimenez = browser.find_element_by_partial_link_text("Raúl Jiménez")
 raul_jimenez.click()
 page_source = browser.page_source
@@ -29,6 +29,17 @@ soup = BeautifulSoup(page_source, 'lxml')
 title_finder = soup.find_all("span", class_="title")
 print(title_finder)
 
-print('*' * 10)
+print('*' * 100)
 for title in title_finder:
     print(title.string)
+
+stats = browser.find_element_by_link_text("Stats")
+stats.click()
+time.sleep(1)
+page_source = browser.page_source
+soup = BeautifulSoup(page_source, 'lxml')
+
+stats_finder = soup.find_all("span", class_="allStatContainer")
+print('*' * 100)
+for stats in stats_finder:
+    print(stats["data-stat"]+":"+stats.string)
