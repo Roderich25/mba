@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from time import sleep
+from .tasks import go_to_sleep
 
 
 def index(request):
-    sleep(5)
-    return render(request, 'progress/index.html')
+    task = go_to_sleep.delay(5)
+    return render(request, 'progress/index.html', {'task_id': task.task_id})

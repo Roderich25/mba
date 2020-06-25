@@ -14,9 +14,7 @@ SECRET_KEY = 'imi6sep*9o8z2lizl9%k_4+j8t7o+^way5(&j+s)-s-s#03h@j'
 DEBUG = True
 
 
-
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -32,6 +30,8 @@ INSTALLED_APPS = [
     'servicios.apps.ServiciosConfig',
     'hashing.apps.HashingConfig',
     'progress.apps.ProgressConfig',
+    'django_celery_results',
+    'celery_progress',
 ]
 
 MIDDLEWARE = [
