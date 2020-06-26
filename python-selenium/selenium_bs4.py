@@ -43,3 +43,5 @@ stats_finder = soup.find_all("span", class_="allStatContainer")
 print('*' * 100)
 for stats in stats_finder:
     print(stats["data-stat"]+":"+stats.string)
+
+browser.quit()
