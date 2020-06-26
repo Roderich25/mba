@@ -1,4 +1,4 @@
-from lxml import html, etree
+from lxml import html
 import requests
 
 page = requests.get('http://www.reforma.com')
