@@ -5,8 +5,11 @@ import Search from "./components/ui/Search";
 import CharacterGrid from "./components/characters/CharacterGrid";
 import "./App.css";
 
+export const MyContext = React.createContext();
+
 const App = () => {
   const [items, setItems] = useState([]);
+  const [theme, setTheme] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [query, setQuery] = useState("");
 
@@ -24,10 +27,18 @@ const App = () => {
     fetchItems();
   }, [query]);
 
+  function toggleTheme() {
+    setTheme((theme) => !theme);
+    console.log(theme);
+  }
+
   return (
     <div className="container">
-      <Header />
-      <Search getQuery={(q) => setQuery(q)} />
+      <MyContext.Provider value={theme}>
+        <button onClick={toggleTheme}>Toggle</button>
+        <Header />
+        <Search getQuery={(q) => setQuery(q)} />
+      </MyContext.Provider>
       <CharacterGrid isLoading={isLoading} items={items} />
     </div>
   );
