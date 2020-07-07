@@ -7,11 +7,15 @@ import "./App.css";
 
 export const MyContext = React.createContext();
 
+const ACTIONS = {
+  INCREMENT: "increment",
+  DECREMENT: "decrement",
+};
 function reducer(state, action) {
   switch (action.type) {
-    case "increment":
+    case ACTIONS.INCREMENT:
       return { count: state.count++ };
-    case "decrement":
+    case ACTIONS.DECREMENT:
       return { count: state.count-- };
     default:
       return state;
@@ -27,11 +31,11 @@ const App = () => {
   const [query, setQuery] = useState("");
 
   const increment = () => {
-    dispatch({ type: "increment" });
+    dispatch({ type: ACTIONS.INCREMENT });
   };
 
   const decrement = () => {
-    dispatch({ type: "decrement" });
+    dispatch({ type: ACTIONS.DECREMENT });
   };
 
   useEffect(() => {
