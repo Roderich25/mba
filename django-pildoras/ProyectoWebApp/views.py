@@ -1,11 +1,14 @@
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
+from servicios.models import Servicios
 
 
 class MyHomeView(TemplateView):
     template_name = 'ProyectoWebApp/home.html'
 
 
-class ServiciosView(TemplateView):
+class ServiciosView(ListView):
+    model = Servicios
+    context_object_name = 'servicios'
     template_name = 'ProyectoWebApp/servicios.html'
 
 
