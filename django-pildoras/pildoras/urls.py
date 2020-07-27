@@ -7,6 +7,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('ProyectoWebApp.urls', namespace='main')),
+    path('servicios/', include('servicios.urls', namespace='servicios')),
     path('progress/', include('progress.urls', namespace='progress')),
     path('celery-progress/', include('celery_progress.urls')),
 ]
