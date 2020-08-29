@@ -1,0 +1,8 @@
+denue/
+municipios/
+rezago_social/
+denue.sqlite3
+chromedriver
+.DS_Store
+.idea/
+venv/
