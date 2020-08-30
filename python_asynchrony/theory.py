@@ -1,5 +1,5 @@
 from random import randint
-import time
+from time import sleep
 import asyncio
 
 
@@ -15,11 +15,11 @@ def main():
     print(odds2)
 
 
-def die():
-    time.sleep(2)
+async def die():
+    await asyncio.sleep(2)
     return randint(1, 6)
 
 
 if __name__ == '__main__':
-    # main()
-    pass
+    die()
+    # pass
