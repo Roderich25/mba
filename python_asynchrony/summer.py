@@ -11,13 +11,13 @@ async def worker(name, n, session):
     response = await session.request(method='GET', url=url)
     value = await response.text()
     value = json.loads(value)
-    return value['data']
+    return sum(value['data'])
 
 
 async def main():
     async with aiohttp.ClientSession() as session:
-        response = await worker('bob', 3, session)
-        print('response:', response, type(response))
+        sums = await asyncio.gather(*(worker(f'w{i}', n, session) for i, n in enumerate(range(2, 15))))
+        print('sums:', sums)
 
 
 if __name__ == '__main__':
