@@ -1,7 +1,6 @@
 import asyncio
 import json
 import time
-
 import aiohttp
 
 
@@ -16,7 +15,7 @@ async def worker(name, n, session):
 
 async def main():
     async with aiohttp.ClientSession() as session:
-        sums = await asyncio.gather(*(worker(f'w{i}', n, session) for i, n in enumerate(range(2, 15))))
+        sums = await asyncio.gather(*(worker(f'{i}', n, session) for i, n in enumerate(range(2, 15))))
         print('sums:', sums)
 
 
