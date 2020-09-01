@@ -10,6 +10,6 @@ def namedfunc(name):
 
 if __name__ == '__main__':
     print('\nmain started.')
-    t = threading.Thread(target=namedfunc, args=['test'])
+    t = threading.Thread(target=namedfunc, args=['test'], daemon=True)
     t.start()
     print('\nmain finished.')
