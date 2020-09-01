@@ -9,5 +9,7 @@ def myfunc(name):
 
 
 if __name__ == '__main__':
+    print('main started')
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:
-        pass
+        ex.map(myfunc, ['foo', 'bar', 'baz'])
+    print('main finished')
