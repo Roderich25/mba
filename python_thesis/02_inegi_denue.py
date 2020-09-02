@@ -2,38 +2,38 @@ import os
 from zipfile import ZipFile
 import requests
 
-files = ['/contenidos/masiva/denue/denue_01_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_02_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_03_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_04_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_05_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_06_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_07_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_08_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_09_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_10_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_11_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_12_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_13_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_14_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_15_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_16_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_17_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_18_04062015_csv.zip',
-         '/contenidos/masiva/denue/denue_19_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_20_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_21_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_22_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_23_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_24_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_25_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_26_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_27_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_28_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_29_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_30_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_31_25022015_csv.zip',
-         '/contenidos/masiva/denue/denue_32_25022015_csv.zip']
+files = ['denue_01_25022015_csv.zip',
+         'denue_02_25022015_csv.zip',
+         'denue_03_25022015_csv.zip',
+         'denue_04_25022015_csv.zip',
+         'denue_05_25022015_csv.zip',
+         'denue_06_25022015_csv.zip',
+         'denue_07_25022015_csv.zip',
+         'denue_08_25022015_csv.zip',
+         'denue_09_25022015_csv.zip',
+         'denue_10_25022015_csv.zip',
+         'denue_11_25022015_csv.zip',
+         'denue_12_25022015_csv.zip',
+         'denue_13_25022015_csv.zip',
+         'denue_14_25022015_csv.zip',
+         'denue_15_25022015_csv.zip',
+         'denue_16_25022015_csv.zip',
+         'denue_17_25022015_csv.zip',
+         'denue_18_04062015_csv.zip',
+         'denue_19_25022015_csv.zip',
+         'denue_20_25022015_csv.zip',
+         'denue_21_25022015_csv.zip',
+         'denue_22_25022015_csv.zip',
+         'denue_23_25022015_csv.zip',
+         'denue_24_25022015_csv.zip',
+         'denue_25_25022015_csv.zip',
+         'denue_26_25022015_csv.zip',
+         'denue_27_25022015_csv.zip',
+         'denue_28_25022015_csv.zip',
+         'denue_29_25022015_csv.zip',
+         'denue_30_25022015_csv.zip',
+         'denue_31_25022015_csv.zip',
+         'denue_32_25022015_csv.zip']
 
 
 def denue_download(file_url):
@@ -50,7 +50,12 @@ def denue_download(file_url):
         print(e)
 
 
-for file in files:
-    url = f'https://www.inegi.org.mx{file}'
-    print(url, url.split('/')[-1])
-    denue_download(url)
+def main():
+    for file in files:
+        url = f'https://www.inegi.org.mx/contenidos/masiva/denue/{file}'
+        print(url, url.split('/')[-1])
+        denue_download(url)
+
+
+if __name__ == '__main__':
+    main()
