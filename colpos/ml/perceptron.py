@@ -15,20 +15,20 @@ class Perceptron(object):
     def fit(self, X, y):
         # np.random.shuffle(X)
         rgen = np.random.RandomState(self.random_state)
-        self.w_ = rgen.normal(loc=0.0, scale=0.01, size=1 + X.shape[1])
+        self.w_ = rgen.normal(loc=0.0, scale=0.0, size=1 + X.shape[1])
         self.errors_ = []
         i = 0
         for _ in range(self.n_iter):
             errors = 0
             j = 0
+            # print("EPOCH")
             for xi, target in zip(X, y):
                 j += 1
-                update = self.eta * (target - self.predict(xi))
+                out = self.predict(xi), self.net_input(xi)
+                update = self.eta * (target - out[0])
                 self.w_[1:] += update * xi
-                if update != 0:
-                    # print(f"Rodrigo {i}:{j}:", self.w_, update*xi, update, xi)
-                    pass
                 self.w_[0] += update
+                # print(f'\tout: {out}, w: {self.w_}')
                 errors += int(update != 0.0)
             self.errors_.append(errors)
             i += 1
@@ -41,43 +41,24 @@ class Perceptron(object):
         return np.where(self.net_input(X) >= 0.0, 1, -1)
 
 
-df = pd.read_csv('iris.data', header=None, encoding='utf-8')
-#df = df.sample(frac=1)
-print(df.tail())
-###
-
-
-# select setosa and versicolor
-y = df.iloc[0:100, 4].values
-y = np.where(y == 'Iris-setosa', -1, 1)
-
-# extract sepal length and petal length
-X = df.iloc[0:100, [0, 2]].values
-
-
-# ### Training the perceptron model
-
-
-ppn = Perceptron(eta=0.1, n_iter=40, random_state=3)
-
+# OR
+X = np.array([[1, 1], [1, 0], [0, 1], [0, 0]])
+y = np.array([1, 1, 1, -1])
+ppn = Perceptron(eta=0.1, n_iter=7, random_state=3)
 ppn.fit(X, y)
-print(ppn.w_)
-print(ppn.errors_)
+print("OR")
+print(ppn.predict([1, 1]))
+print(ppn.predict([0, 1]))
+print(ppn.predict([1, 0]))
+print(ppn.predict([0, 0]))
 
-# plot data
-plt.scatter(X[:50, 0], X[:50, 1],
-            color='red', marker='o', label='setosa')
-plt.scatter(X[50:100, 0], X[50:100, 1],
-            color='blue', marker='x', label='versicolor')
-
-plt.xlabel('sepal length [cm]')
-plt.ylabel('petal length [cm]')
-plt.legend(loc='upper left')
-
-plt.show()
-
-plt.plot(range(1, len(ppn.errors_) + 1), ppn.errors_, marker='o')
-plt.xlabel('Epochs')
-plt.ylabel('Number of updates')
-
-plt.show()
+# AND
+X = np.array([[1, 1], [1, 0], [0, 1], [0, 0]])
+y = np.array([1, -1, -1, -1])
+ppn = Perceptron(eta=0.1, n_iter=7, random_state=3)
+ppn.fit(X, y)
+print("AND")
+print(ppn.predict([1, 1]))
+print(ppn.predict([0, 1]))
+print(ppn.predict([1, 0]))
+print(ppn.predict([0, 0]))
