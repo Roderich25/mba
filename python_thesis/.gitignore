@@ -1,10 +1,12 @@
 denue/
 municipios/
 rezago_social/
-denue.sqlite3
+denue_rezago.db
 chromedriver
 .DS_Store
 .idea/
 venv/
 inegi/
 scian/
+denue.csv
+summary/

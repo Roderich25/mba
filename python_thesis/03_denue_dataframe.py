@@ -26,5 +26,6 @@ for file in os.listdir(FOLDER):
         df = pd.concat([temp, df], axis=0, ignore_index=True)
         print(df.shape, temp.shape)
 
+df.to_csv("denue.csv")
 conn = sqlite3.connect('denue.sqlite3')
 df.to_sql('denue', conn, if_exists='replace', index=False)
