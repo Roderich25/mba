@@ -6,10 +6,11 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, plot_confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 import pandas as pd
 from matplotlib import pyplot as plt
 
-for folder in ["Count_Personal","Count"]:
+for folder in ["Count_Personal", "Count"]:
     for i in range(2, 7):
         for c in ["lgc00_15cl3", "lgc00_15cl4_2"]:
             print(f'########### {i}:{c}:{folder} ##########')
@@ -20,18 +21,20 @@ for folder in ["Count_Personal","Count"]:
 
             df = pd.merge(rezago_social, denue_wide, on=['Key'])
             df.drop(['Key'], axis=1, inplace=True)
-            #print(df.head())
+            # print(df.head())
 
             print(df.shape)
-            #print(df['Rezago'].value_counts())
+            # print(df['Rezago'].value_counts())
 
             y = df['Rezago']
             X = df.drop(['Rezago'], axis=1)
             scaler = StandardScaler()
+
+            pca = PCA(n_components=10)
             X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.20)
 
-            X_train = scaler.fit_transform(X_train)
-            X_test = scaler.fit_transform(X_test)
+            # X_train = pca.fit_transform(scaler.fit_transform(X_train))
+            # X_test = pca.transform(scaler.fit_transform(X_test))
 
             # Modelling
             clf = AdaBoostClassifier()
