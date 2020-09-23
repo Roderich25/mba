@@ -1,9 +1,12 @@
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import cross_val_score
+from sklearn.metrics import accuracy_score, plot_confusion_matrix
+from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
+from matplotlib import pyplot as plt
 
-for folder in ["Count_Personal", "Count"]:
+for folder in ["Count_Personal"]:
     for i in [5]:
         for c in ["lgc00_15cl3"]:
             print(f'########### {i}:{c}:{folder} ##########')
@@ -17,10 +20,9 @@ for folder in ["Count_Personal", "Count"]:
             y = df['Rezago']
             X = df.drop(['Rezago'], axis=1)
             # Modelling
-            for rs in [555, 666, 777]:
-                for hidden_layers in [(200, 200,), (200, 200, 200,), (250, 250,), (250, 250, 250,), (300, 300,),
-                                      (300, 300, 300,)]:
-                    for max_iter in [2000, 3000]:
+            for hidden_layers in [(250, 250, 250,)]:
+                for rs in [555, 666, 777]:
+                    for max_iter in [3000]:
                         for solver in ["adam"]:
                             for activation in ["relu"]:
                                 clf = MLPClassifier(solver=solver, activation=activation, max_iter=max_iter,
@@ -29,6 +31,14 @@ for folder in ["Count_Personal", "Count"]:
                                     f"NN{i}:{c}:{folder}\tsolve:{solver}, af:{activation}, max_iter_{max_iter}, hl:{hidden_layers}, rs:{rs}")
                                 scores = cross_val_score(clf, X, y, cv=10)
                                 print(np.min(scores), np.mean(scores), np.median(scores), np.max(scores))
+                                ###
+                                X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.20, random_state=rs)
+                                clf = MLPClassifier(solver=solver, activation=activation, max_iter=max_iter,
+                                                    hidden_layer_sizes=hidden_layers, random_state=rs)
+                                clf.fit(X_train, y_train)
+                                plot_confusion_matrix(clf, X_test, y_test, normalize='true')
+                                plt.title(f"NN{i}:{c}:{folder}\tsolve:{solver}, af:{activation}, max_iter_{max_iter}, hl:{hidden_layers}, rs:{rs}\nAccuracy{clf.score(X_test,y_test)}")
+                                plt.show()
 
 # 777
 # NN3:lgc00_15cl3:Count_Personal	solve:adam,af:logistic,max_iter_1500,hl:(50,)
@@ -100,3 +110,12 @@ for folder in ["Count_Personal", "Count"]:
 
 # NN5:lgc00_15cl3:Count_Personal	solve:adam,af:relu,max_iter_2000,hl:(200, 200, 200)
 # 0.6585365853658537 0.723645262983242 0.7235772357723578 0.8414634146341463
+
+# NN5:lgc00_15cl3:Count_Personal	solve:adam, af:relu, max_iter_2000, hl:(250, 250, 250), rs:555
+# 0.673469387755102 0.732570101211216 0.7270947403351584 0.8292682926829268
+# NN5:lgc00_15cl3:Count_Personal	solve:adam, af:relu, max_iter_3000, hl:(250, 250, 250), rs:555
+# 0.673469387755102 0.732570101211216 0.7270947403351584 0.8292682926829268
+
+
+###
+
