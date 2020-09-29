@@ -111,6 +111,7 @@ for folder in ["Count_Personal"]:
 # NN5:lgc00_15cl3:Count_Personal	solve:adam,af:relu,max_iter_2000,hl:(200, 200, 200)
 # 0.6585365853658537 0.723645262983242 0.7235772357723578 0.8414634146341463
 
+
 # NN5:lgc00_15cl3:Count_Personal	solve:adam, af:relu, max_iter_2000, hl:(250, 250, 250), rs:555
 # 0.673469387755102 0.732570101211216 0.7270947403351584 0.8292682926829268
 # NN5:lgc00_15cl3:Count_Personal	solve:adam, af:relu, max_iter_3000, hl:(250, 250, 250), rs:555
