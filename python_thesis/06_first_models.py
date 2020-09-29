@@ -99,16 +99,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-for sol in ['lbgfgs', 'newton-cg', 'sag', 'saga', 'none']:
-    for cr in np.arange(0.1, 4, .1):
-        if accuracy_score(y_test, predictions) > max_acc_model_1:
-            max_acc_model_1 = accuracy_score(y_test, predictions)
-            clf = LogisticRegression(solver=sol, multi_class='auto', max_iter=10000, penalty='l2',
-                                     C=cr)
-            clf = clf.fit(X_train, y_train)
-            predictions = clf.predict(X_test)
-            print(f"LogisticRegression {sol},{cr}:", accuracy_score(y_test, predictions))
-            plot_confusion_matrix(clf, X_test, y_test, normalize='true')
-            plt.title(f"LR {sol},{cr} - {i}:{c}:{folder}, {accuracy_score(y_test, predictions)}")
-            plt.show()
