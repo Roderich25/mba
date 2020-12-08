@@ -1,100 +1,72 @@
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.neural_network import MLPClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score, plot_confusion_matrix
-from sklearn.model_selection import train_test_split
-
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import roc_curve, auc
+from sklearn.model_selection import train_test_split, cross_val_score, cross_val_predict
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler, label_binarize
+import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+from itertools import cycle
 
 
 def main():
-    for folder in ["Count_Personal", "Count"]:
-        for i in range(1, 7):
-            for c in ["lgc00_15cl3"]:
-                print(f'########### {i}:{c}:{folder} ##########')
-                denue_wide = pd.read_csv(f"summary/{folder}/denue_wide_{i}.csv")
+    for k in [4]:
+        for folder in ["Count_Personal"]:
+            for t in [1000]:
+                print(f'# {k}, {folder}, {t}')
+                denue_wide = pd.read_csv(f"summary/{folder}/denue_wide_{k}.csv")
                 rezago = pd.read_csv("rezago_social/rezago_social.csv")
-                rezago_social = rezago[[c, "Key"]]  # , "LAT", "LON"]]#
-                rezago_social.rename(columns={c: 'Rezago'}, inplace=True)
-
+                rezago_social = rezago[["lgc00_15cl3", "Key", "POB_TOTAL"]]
                 df = pd.merge(rezago_social, denue_wide, on=['Key'])
                 df.drop(['Key'], axis=1, inplace=True)
-
-                print(df.shape)
-                y = df['Rezago']
-                X = df.drop(['Rezago'], axis=1)
-                X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.20, random_state=2012)
-
-                # Modelling
-                clf = AdaBoostClassifier(n_estimators=400)
-                clf = clf.fit(X_train, y_train)
-                predictions = clf.predict(X_test)
-                print("ADA:", accuracy_score(y_test, predictions))
-                plot_confusion_matrix(clf, X_test, y_test, normalize='true')
-                plt.title(f"ADA {i}:{c}:{folder}, {accuracy_score(y_test, predictions)}")
-                plt.show()
-
-                clf = LogisticRegression(solver='lbfgs', multi_class='auto', max_iter=10000, penalty='l2')
-                clf = clf.fit(X_train, y_train)
-                predictions = clf.predict(X_test)
-                print("LogisticRegression:", accuracy_score(y_test, predictions))
-                plot_confusion_matrix(clf, X_test, y_test, normalize='true')
-                plt.title(f"LR {i}:{c}:{folder}, {accuracy_score(y_test, predictions)}")
-                plt.show()
-
-                clf = MLPClassifier(solver='adam', activation='relu', hidden_layer_sizes=(250, 250, 250,),
-                                    max_iter=2500)
-                clf = clf.fit(X_train, y_train)
-                predictions = clf.predict(X_test)
-                print("NeuralNetwork:", accuracy_score(y_test, predictions))
-                plot_confusion_matrix(clf, X_test, y_test, normalize='true')
-                plt.title(f"NN {i}:{c}:{folder}, {accuracy_score(y_test, predictions)}")
-                plt.show()
-
-                clf = DecisionTreeClassifier()
-                clf = clf.fit(X_train, y_train)
-                predictions = clf.predict(X_test)
-                print("DecisionTree:", accuracy_score(y_test, predictions))
-                plot_confusion_matrix(clf, X_test, y_test, normalize='true')
-                plt.title(f"DT {i}:{c}:{folder}, {accuracy_score(y_test, predictions)}")
-                plt.show()
-
-                clf = SVC(kernel='rbf')
-                clf = clf.fit(X_train, y_train)
-                predictions = clf.predict(X_test)
-                print("SVC RBF:", accuracy_score(y_test, predictions))
-                plot_confusion_matrix(clf, X_test, y_test, normalize='true')
-                plt.title(f"SVC-RBF {i}:{c}:{folder}, {accuracy_score(y_test, predictions)}")
-                plt.show()
-
-                clf = SVC(kernel='linear')
-                clf = clf.fit(X_train, y_train)
-                predictions = clf.predict(X_test)
-                print("SVC Linear:", accuracy_score(y_test, predictions))
-                plot_confusion_matrix(clf, X_test, y_test, normalize='true')
-                plt.title(f"SVC-L {i}:{c}:{folder}, {accuracy_score(y_test, predictions)}")
-                plt.show()
-
-                for k in range(5, 55, 5):
-                    clf = KNeighborsClassifier(n_neighbors=k)
-                    clf = clf.fit(X_train, y_train)
-                    predictions = clf.predict(X_test)
-                    print(f"Knn{k}:", accuracy_score(y_test, predictions))
-                    plot_confusion_matrix(clf, X_test, y_test, normalize='true')
-                    plt.title(f"KNN{k} {i}:{c}:{folder}, {accuracy_score(y_test, predictions)}")
-                    plt.show()
-
-                clf = RandomForestClassifier()
-                clf = clf.fit(X_train, y_train)
-                predictions = clf.predict(X_test)
-                print("RandomForest:", accuracy_score(y_test, predictions))
-                plot_confusion_matrix(clf, X_test, y_test, normalize='true')
-                plt.title(f"RF {i}:{c}:{folder}, {accuracy_score(y_test, predictions)}")
-                plt.show()
+                print(f'Before {t}:', df.shape)
+                df.drop([col for col, val in df.sum().iteritems() if val <= t], axis=1, inplace=True)
+                print(f'After {t}:', df.shape)
+                y = df['lgc00_15cl3']
+                X = df.iloc[:, 2:].div((df.POB_TOTAL / 1000), axis=0)
+                X['pop'] = df.POB_TOTAL
+                print(X.shape)
+                X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.10,
+                                                                    random_state=0)
+                for ne in [1000]:
+                    for md in [20]:
+                        for cri in ['entropy']:
+                            for mf in ['sqrt']:
+                                clf = RandomForestClassifier(max_depth=md, n_estimators=ne, criterion=cri,
+                                                             max_features=mf, random_state=0)
+                                pipeline = make_pipeline(StandardScaler(), clf)
+                                scores = cross_val_score(pipeline, X_train, y_train, cv=10, n_jobs=-1)
+                                if np.mean(scores) > 0.74:
+                                    print(
+                                        f"{clf}, {folder}, {t}, {k}, {ne}, {md}, {cri}, {mf}, cv='10', mean={np.mean(scores)}, median={np.median(scores)}, std={np.std(scores)}")
+                                    scores = cross_val_score(pipeline, X, y, cv=5, n_jobs=-1)
+                                    if np.mean(scores) > 0.71:
+                                        print(
+                                            f"{clf}, {folder}, {t}, {k}, {ne}, {md}, {cri}, {mf}, cv='5', mean={np.mean(scores)}, median={np.median(scores)}, std={np.std(scores)}")
+                                        # Curva ROC
+                                        y_bin = label_binarize(y, classes=[1, 2, 3])
+                                        n_classes = y_bin.shape[1]
+                                        y_score = cross_val_predict(pipeline, X, y, cv=10, method='predict_proba')
+                                        fpr = dict()
+                                        tpr = dict()
+                                        roc_auc = dict()
+                                        for i in range(n_classes):
+                                            fpr[i], tpr[i], _ = roc_curve(y_bin[:, i], y_score[:, i])
+                                            roc_auc[i] = auc(fpr[i], tpr[i])
+                                        colors = cycle(['blue', 'red', 'green'])
+                                        for i, color in zip(range(n_classes), colors):
+                                            plt.plot(fpr[i], tpr[i], color=color, lw=2,
+                                                     label='ROC curve of class {0} (area = {1:0.6f})'
+                                                           ''.format(i + 1, roc_auc[i]))
+                                        plt.plot([0, 1], [0, 1], 'k--', lw=2)
+                                        plt.xlim([-0.05, 1.0])
+                                        plt.ylim([0.0, 1.05])
+                                        plt.xlabel('Tasa de Falsos Positivos')
+                                        plt.ylabel('Tasa de Verdaderos Positivos')
+                                        plt.title(f"{clf}\n{np.mean(scores)}")
+                                        plt.legend(loc="lower right")
+                                        plt.show()
+                                        plt.close()
 
 
 if __name__ == '__main__':

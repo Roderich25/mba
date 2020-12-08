@@ -4,7 +4,7 @@ import asyncio
 import aiohttp
 import aiofiles
 
-FOLDER = 'inegi'
+FOLDER = 'denue'
 
 files = ['denue_01_25022015_csv.zip',
          'denue_02_25022015_csv.zip',

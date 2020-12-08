@@ -15,3 +15,6 @@ for encoding in set(aliases.values()):
     except:
         pass
 # iso8859_2 iso8859_15 cp1254 iso8859_13 iso8859_14 latin_1 cp1258 cp1252 iso8859_16 cp1250 iso8859_9 iso8859_10
+# clf = LogisticRegression(solver='lbfgs', multi_class='multinomial', penalty='l2', C=0.5)
+# df.POB_TOTAL = df.POB_TOTAL / 1000
+# X = df.iloc[:, 2:].div(df.POB_TOTAL, axis=0)

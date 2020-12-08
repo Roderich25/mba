@@ -10,3 +10,7 @@ inegi/
 scian/
 denue.csv
 summary/
+*.sqlite3
+preds_.csv
+test.py
+test1.py
