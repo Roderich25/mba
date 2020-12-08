@@ -41,3 +41,15 @@ records = [
     ('bar', 'hello'),
     ('foo', 3, 4)
 ]
+
+
+def do_foo(x, y):
+    pass
+
+
+def do_bar(s):
+    pass
+
+
+for tag, *args in records:
+    print(tag)
