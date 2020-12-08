@@ -44,12 +44,43 @@ records = [
 
 
 def do_foo(x, y):
-    pass
+    print('foo', x, y)
 
 
 def do_bar(s):
-    pass
+    print('bar', s)
 
 
 for tag, *args in records:
-    print(tag)
+    if tag == 'foo':
+        do_foo(*args)
+    elif tag == 'bar':
+        do_bar(*args)
+
+# another example
+line = 'nobody:-2:-2:Unprivileged User:/var/empty:/usr/bin/false'
+uname, *fields, homedir, sh = line.split(':')
+print(uname)
+print(homedir)
+print(sh)
+
+# another example
+record = ['ACME', 50, 123.45, (8, 12, 2020)]
+name, *_, (*_, year) = record
+print(name)
+print(year)
+
+# another example
+items = [1, 10, 7, 4, 5, 9]
+head, *tail = items
+print(head)
+print(tail)
+
+
+def sum_items(items):
+    head, *tail = items
+    return head + sum_items(tail) if tail else head  # recursion
+
+
+print(sum_items(items))
+print(sum_items([100]))
