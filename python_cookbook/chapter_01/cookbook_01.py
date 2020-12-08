@@ -22,7 +22,7 @@ print(year)
 print(mon)
 print(day)
 
-# unpacking also works for iterable objects
+# another example | unpacking also works for iterable objects
 s = 'Hello'
 a, b, c, d, e = s
 print(a)
@@ -31,7 +31,7 @@ print(c)
 print(d)
 print(e)
 
-# ignoring certain values
+# another example | ignoring certain values
 x, _, y, (z, _, _) = data
 print(x)
 print(y)
