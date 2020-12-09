@@ -26,3 +26,5 @@ print(a.items() & b.items())
 # new dictionary with keys removed
 c = {key: a[key] for key in a.keys()-{'z', 'w'}}
 print(c)
+
+# `keys` and `items` methods support set operations but `values` method don't
