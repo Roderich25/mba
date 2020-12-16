@@ -49,3 +49,29 @@ print(m.group(1))
 print(m.group(2))
 print(m.group(3))
 print(m.groups())
+month, day, year = m.groups()
+print(year, month, day)
+
+# find all matches (notice splitting into tuples)
+alldates = datepat.findall(text)
+print(alldates)
+for m, d, y in datepat.findall(text):
+    print(f'{y}-{m}-{d}')
+
+for m in datepat.finditer(text):
+    print(m.groups())
+
+
+# another example
+m = datepat.match('12/14/2020abcdef')
+print(m)
+print(m.groups())
+
+datepat = re.compile(r'(\d+)/(\d+)/(\d+)$')
+m = datepat.match('12/14/2020abcdef')
+print(m)
+m = datepat.match('12/14/2020')
+print(m)
+
+alldates = re.findall(r'(\d+)/(\d+)/(\d+)', text)
+print(alldates)
