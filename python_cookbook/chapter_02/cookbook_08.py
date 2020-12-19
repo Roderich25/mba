@@ -12,3 +12,11 @@ text2 = '''
 '''
 print(comment.findall(text1))
 print(comment.findall(text2))
+
+comment = re.compile(r'/\*((?:.|\n)*?)\*/')
+print(comment.findall(text1))
+print(comment.findall(text2))
+
+comment = re.compile(r'/\*(.*?)\*/', re.DOTALL)  # re.MULTILINE ignores dots
+print(comment.findall(text1))
+print(comment.findall(text2))
