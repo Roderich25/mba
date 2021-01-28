@@ -6,6 +6,7 @@ from matplotlib.patches import Patch
 from shapely.geometry import Point
 
 gdf = gpd.read_file('municipios/areas_geoestadisticas_municipales.shp')
+print(gdf.columns)
 gdf['Key'] = gdf['CVE_ENT'] + gdf['CVE_MUN']
 
 rezago = pd.read_csv("rezago_social/rezago_social.csv")

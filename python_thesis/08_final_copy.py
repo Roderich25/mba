@@ -14,26 +14,30 @@ from itertools import cycle
 import geopandas as gpd
 
 
-def main_lr(metric):
+def main_lr():
     max_accuracy_lr = 0
     for k in range(3, 5):
-        denue_wide = pd.read_csv(f"summary/Count/denue_wide_{k}.csv")
+        denue_wide = pd.read_csv(f"summary/denue_wide_{k}.csv")
         rezago = pd.read_csv("rezago_social/rezago_social.csv")
-        rezago_social = rezago[["lgc00_15cl3", "Key", "POB_TOTAL", "LAT", "LON"]]
+        rezago_social = rezago[["lgc00_15cl3", "Key", "POB_TOTAL", "LAT", "LON", "ALT", "AREA"]]
         df = pd.merge(rezago_social, denue_wide, on=['Key'])
         df.drop(['Key'], axis=1, inplace=True)
         y = df['lgc00_15cl3']
-        X = df.iloc[:, 5:].div(df.POB_TOTAL, axis=0) * 1000
+        X = df.iloc[:, 7:].div(df.POB_TOTAL, axis=0) * 1000
         X["LAT"] = rezago_social["LAT"]
         X["LON"] = rezago_social["LON"]
-        # X["POB_TOTAL"] = rezago_social["POB_TOTAL"]
+        #X["ALT"] = rezago_social["ALT"]
+        #X["AREA"] = rezago_social["AREA"]
+        #X["POB_TOTAL"] = rezago_social["POB_TOTAL"]
+        print(X.columns)
+        # print(X.head(3))
         print(f'# LR {k} {X.shape}')
         X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.20, random_state=0)
         for c in [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]:
             for mc in ['multinomial']:
-                clf = LogisticRegression(solver='lbfgs', multi_class=mc, penalty='l2', C=c, max_iter=10000, random_state=0)
+                clf = LogisticRegression(solver='lbfgs', multi_class=mc, penalty='l2', C=c, max_iter=10000)
                 pipeline = make_pipeline(StandardScaler(), clf)
-                scores = cross_val_score(pipeline, X_train, y_train, cv=10, n_jobs=-1, scoring=metric)
+                scores = cross_val_score(pipeline, X_train, y_train, cv=10, n_jobs=-1, scoring='f1_macro')
                 if np.mean(scores) > max_accuracy_lr:
                     max_accuracy_lr = np.mean(scores)
                     print(f"\t # LR {max_accuracy_lr}, {k}, {c}, {mc}")
@@ -47,7 +51,7 @@ def main_lr(metric):
     best_pipe.fit(Xtrain, ytrain)
     print(f"# {best_k}: {best_clf} Train:{best_pipe.score(Xtrain, ytrain) * 100}")
     print(f"# {best_k}: {best_clf} Test:{best_pipe.score(Xtest, ytest) * 100}")
-    scores = cross_val_score(best_pipe, Xpred, ypred, cv=5, n_jobs=-1, scoring=metric)
+    scores = cross_val_score(best_pipe, Xpred, ypred, cv=5, n_jobs=-1, scoring='f1_macro')
     print(f"# {best_k}: {best_clf} CV5:{np.mean(scores)} +/- {np.std(scores)}")
 
     # Mapa
@@ -69,28 +73,35 @@ def main_lr(metric):
     # plt.figtext(0.01, 0.01, txt, wrap=True, horizontalalignment='left', fontsize=12)
     # plt.show()
 
-
-def main_svm(metric):
+# 3: SVC(C=1000.0, gamma=0.0001, probability=True, random_state=0) Train:82.13740458015268
+# 3: SVC(C=1000.0, gamma=0.0001, probability=True, random_state=0) Test:76.21951219512195
+# 3: SVC(C=1000.0, gamma=0.0001, probability=True, random_state=0) CV5:0.7289454075803488 +/- 0.011785767125634656
+def main_svm():
     max_accuracy_svm = 0
-    for k in range(3, 5):
-        denue_wide = pd.read_csv(f"summary/Count/denue_wide_{k}.csv")
+    for k in range(2, 6):
+        denue_wide = pd.read_csv(f"summary/denue_wide_{k}.csv")
         rezago = pd.read_csv("rezago_social/rezago_social.csv")
-        rezago_social = rezago[["lgc00_15cl3", "Key", "POB_TOTAL", "LAT", "LON"]]
+        rezago_social = rezago[["lgc00_15cl3", "Key", "POB_TOTAL", "LAT", "LON", "ALT", "AREA"]]
         df = pd.merge(rezago_social, denue_wide, on=['Key'])
         df.drop(['Key'], axis=1, inplace=True)
         y = df['lgc00_15cl3']
-        X = df.iloc[:, 5:].div(df.POB_TOTAL, axis=0) * 1000
+        X = df.iloc[:, 7:].div(df.POB_TOTAL, axis=0) * 1000
         X["LAT"] = rezago_social["LAT"]
         X["LON"] = rezago_social["LON"]
+        #X["ALT"] = rezago_social["ALT"]
+        X["AREA"] = rezago_social["AREA"]
+        X["POB_TOTAL"] = rezago_social["POB_TOTAL"]
+        # print(X.columns)
+        # print(X.head(3))
         print(f'# SVM {k} {X.shape}')
         X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.20, random_state=42)
         for c in [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]:
             for g in [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]:
-                for kr in ['sigmoid']:  # ['rbf', 'sigmoid']:
+                for kr in ['rbf', 'sigmoid']:
                     print('\t#', c, g, kr)
                     clf = SVC(kernel=kr, gamma=g, C=c, probability=True, random_state=0)
                     pipeline = make_pipeline(StandardScaler(), clf)
-                    scores = cross_val_score(pipeline, X_train, y_train, cv=10, n_jobs=-1, scoring=metric)
+                    scores = cross_val_score(pipeline, X_train, y_train, cv=10, n_jobs=-1)
                     if np.mean(scores) > max_accuracy_svm:
                         max_accuracy_svm = np.mean(scores)
                         print(f"\t # SVM {max_accuracy_svm}, {c}, {g}, {kr}")
@@ -104,10 +115,10 @@ def main_svm(metric):
     best_pipe.fit(Xtrain, ytrain)
     print(f"# {best_k}: {best_clf} Train:{best_pipe.score(Xtrain, ytrain) * 100}")
     print(f"# {best_k}: {best_clf} Test:{best_pipe.score(Xtest, ytest) * 100}")
-    scores = cross_val_score(best_pipe, Xpred, ypred, cv=5, n_jobs=-1, scoring=metric)
+    scores = cross_val_score(best_pipe, Xpred, ypred, cv=5, n_jobs=-1)
     print(f"# {best_k}: {best_clf} CV5:{np.mean(scores)} +/- {np.std(scores)}")
 
-    # # Mapa
+    # Mapa
     # y_pred = best_pipe.predict(X)
     # # print(y_pred)
     # gdf = gpd.read_file('municipios/areas_geoestadisticas_municipales.shp')
@@ -127,19 +138,24 @@ def main_svm(metric):
     # plt.show()
 
 
-def main_rf(metric):
+def main_rf():
     max_accuracy_rf = 0
-    for k in range(3, 6):
-        denue_wide = pd.read_csv(f"summary/Count/denue_wide_{k}.csv")
+    for k in range(2, 5):
+        denue_wide = pd.read_csv(f"summary/denue_wide_{k}.csv")
         rezago = pd.read_csv("rezago_social/rezago_social.csv")
-        rezago_social = rezago[["lgc00_15cl3", "Key", "POB_TOTAL", "LAT", "LON"]]
+        rezago_social = rezago[["lgc00_15cl3", "Key", "POB_TOTAL", "LAT", "LON", "ALT", "AREA"]]
         df = pd.merge(rezago_social, denue_wide, on=['Key'])
         df.drop(['Key'], axis=1, inplace=True)
         y = df['lgc00_15cl3']
-        X = df.iloc[:, 5:].div(df.POB_TOTAL, axis=0) * 1000
+        X = df.iloc[:, 7:].div(df.AREA, axis=0) * 1000
         X["LAT"] = rezago_social["LAT"]
         X["LON"] = rezago_social["LON"]
-        print(X.head())
+        #X["ALT"] = rezago_social["ALT"]
+        #X["AREA"] = rezago_social["AREA"]
+        X["POB_TOTAL"] = rezago_social["POB_TOTAL"]
+        # print(X.columns)
+        # print(X.head(3))
+        # print(f'# LR {k} {X.shape}')
         print(f'# RF {k} {X.shape}')
         X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.20, random_state=0)
         for ne in [100, 200, 300, 400]:
@@ -150,10 +166,10 @@ def main_rf(metric):
                         clf = RandomForestClassifier(max_depth=md, n_estimators=ne, criterion=cri, max_features=mf,
                                                      random_state=0)
                         pipeline = make_pipeline(StandardScaler(), clf)
-                        scores = cross_val_score(pipeline, X_train, y_train, cv=10, n_jobs=-1, scoring=metric)
+                        scores = cross_val_score(pipeline, X_train, y_train, cv=10, n_jobs=-1)
                         if np.mean(scores) > max_accuracy_rf:
                             max_accuracy_rf = np.mean(scores)
-                            print(f"\t # SVM {max_accuracy_rf}, {ne}, {md}, {cri}, {mf}")
+                            print(f"\t # RF {max_accuracy_rf}, {ne}, {md}, {cri}, {mf}")
                             best_clf = clone(clf)
                             best_k = k
                             Xtrain, ytrain = X_train, y_train
@@ -164,22 +180,22 @@ def main_rf(metric):
     best_pipe.fit(Xtrain, ytrain)
     print(f"# {best_k}: {best_clf} Train:{best_pipe.score(Xtrain, ytrain) * 100}")
     print(f"# {best_k}: {best_clf} Test:{best_pipe.score(Xtest, ytest) * 100}")
-    scores = cross_val_score(best_pipe, Xpred, ypred, cv=5, n_jobs=-1, scoring=metric)
+    scores = cross_val_score(best_pipe, Xpred, ypred, cv=5, n_jobs=-1)
     print(f"# {best_k}: {best_clf} CV5:{np.mean(scores)} +/- {np.std(scores)}")
 
-    # importance_vals = best_clf.feature_importances_
-    # std = np.std([tree.feature_importances_ for tree in best_clf.estimators_],
-    #              axis=0)
-    # indices = np.argsort(importance_vals)[::-1]
+    importance_vals = best_clf.feature_importances_
+    std = np.std([tree.feature_importances_ for tree in best_clf.estimators_],
+                 axis=0)
+    indices = np.argsort(importance_vals)[::-1]
 
     # Plot the feature importances of the forest
-    # plt.figure()
-    # plt.title("Importancia de variables de entrada (RF)")
-    # plt.bar(range(X.shape[1])[:10], importance_vals[indices][:10], align="center")
-    # plt.xticks(range(X.shape[1])[:10], X.columns[indices][:10])
-    # plt.xlim([-1, 10])
-    # plt.ylim([0, 0.1])
-    # plt.show()
+    plt.figure()
+    plt.title("Importancia de variables de entrada (RF)")
+    plt.bar(range(X.shape[1])[:10], importance_vals[indices][:10], align="center")
+    plt.xticks(range(X.shape[1])[:10], X.columns[indices][:10])
+    plt.xlim([-1, 10])
+    plt.ylim([0, 0.1])
+    plt.show()
     # Mapa
     # y_pred = best_pipe.predict(X)
     # # print(y_pred)
@@ -247,8 +263,6 @@ def main_rf2():
         X["3118"] = X0["3118"]
         X["8114"] = X0["8114"]
         print(X.head())
-        print(y.value_counts(normalize=True))
-        print(y.value_counts(normalize=False))
         print(f'# RF {k} {X.shape}')
         X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.20, random_state=0)
         for ne in [300]:  # [100, 200, 300, 400]:
@@ -335,8 +349,4 @@ def main_rf2():
 
 
 if __name__ == '__main__':
-    # main_lr()
-    # main_svm()
-    main_rf('f1_weighted')
-    main_rf('balanced_accuracy')
-
+    main_lr()

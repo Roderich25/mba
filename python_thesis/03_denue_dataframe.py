@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import sqlite3
 
-FOLDER = 'denue'
+FOLDER = 'denue/201601'
 COL_NAMES = ["id", "nom_estab", "raz_social", "codigo_act", "nombre_act", "per_ocu", "tipo_vial", "nom_vial",
              "tipo_v_e_1", "nom_v_e_1", "tipo_v_e_2", "nom_v_e_2", "tipo_v_e_3", "nom_v_e_3", "numero_ext", "letra_ext",
              "edificio", "edificio_e", "numero_int", "letra_int", "tipo_asent", "nomb_asent", "tipoCenCom",
@@ -26,6 +26,6 @@ for file in os.listdir(FOLDER):
         df = pd.concat([temp, df], axis=0, ignore_index=True)
         print(df.shape, temp.shape)
 
-df.to_csv("denue.csv")
-conn = sqlite3.connect('denue.sqlite3')
-df.to_sql('denue', conn, if_exists='replace', index=False)
+df.to_csv("denue2016.csv")
+conn = sqlite3.connect('denue2016.sqlite3')
+df.to_sql('denue2016', conn, if_exists='replace', index=False)
