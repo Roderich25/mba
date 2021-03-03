@@ -1,6 +1,6 @@
 import pandas as pd
 
-df = pd.read_csv("denue2016.csv", encoding="utf-8", low_memory=False)
+df = pd.read_csv("denue201611.csv", encoding="utf-8", low_memory=False)
 df["Key"] = df.cve_ent.apply(lambda x: f"{x:02}") + df.cve_mun.apply(lambda x: f"{x:03}")
 # df["Personal"] = df["per_ocu"]
 

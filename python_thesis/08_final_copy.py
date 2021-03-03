@@ -1,352 +1,266 @@
-from sklearn.ensemble import RandomForestClassifier
+from matplotlib.lines import Line2D
 from sklearn.linear_model import LogisticRegression
-from sklearn.base import clone
 from sklearn.svm import SVC
-from sklearn.metrics import roc_curve, auc
-from sklearn.model_selection import train_test_split, cross_val_score, cross_val_predict
-from sklearn.pipeline import make_pipeline
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import roc_curve, auc, classification_report
+from sklearn.model_selection import train_test_split, cross_val_score, cross_val_predict, GridSearchCV
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, label_binarize
 import numpy as np
 import pandas as pd
-from itertools import combinations
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt, font_manager
 from itertools import cycle
 import geopandas as gpd
+import matplotlib
+
+import seaborn as sns
+import scikitplot as skplt
+
+matplotlib.rcParams['font.family'] = 'Times New Roman'
+matplotlib.rcParams["font.weight"] = "bold"
+matplotlib.rcParams["axes.labelweight"] = "bold"
 
 
-def main_lr():
-    max_accuracy_lr = 0
-    for k in range(3, 5):
-        denue_wide = pd.read_csv(f"summary/denue_wide_{k}.csv")
-        rezago = pd.read_csv("rezago_social/rezago_social.csv")
-        rezago_social = rezago[["lgc00_15cl3", "Key", "POB_TOTAL", "LAT", "LON", "ALT", "AREA"]]
-        df = pd.merge(rezago_social, denue_wide, on=['Key'])
-        df.drop(['Key'], axis=1, inplace=True)
-        y = df['lgc00_15cl3']
-        X = df.iloc[:, 7:].div(df.POB_TOTAL, axis=0) * 1000
-        X["LAT"] = rezago_social["LAT"]
-        X["LON"] = rezago_social["LON"]
-        #X["ALT"] = rezago_social["ALT"]
-        #X["AREA"] = rezago_social["AREA"]
-        #X["POB_TOTAL"] = rezago_social["POB_TOTAL"]
-        print(X.columns)
-        # print(X.head(3))
-        print(f'# LR {k} {X.shape}')
-        X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.20, random_state=0)
-        for c in [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]:
-            for mc in ['multinomial']:
-                clf = LogisticRegression(solver='lbfgs', multi_class=mc, penalty='l2', C=c, max_iter=10000)
-                pipeline = make_pipeline(StandardScaler(), clf)
-                scores = cross_val_score(pipeline, X_train, y_train, cv=10, n_jobs=-1, scoring='f1_macro')
-                if np.mean(scores) > max_accuracy_lr:
-                    max_accuracy_lr = np.mean(scores)
-                    print(f"\t # LR {max_accuracy_lr}, {k}, {c}, {mc}")
-                    best_clf = clone(clf)
-                    best_k = k
-                    Xtrain, ytrain = X_train, y_train
-                    Xtest, ytest = X_test, y_test
-                    Xpred, ypred = X, y
-    print(best_clf, max_accuracy_lr)
-    best_pipe = make_pipeline(StandardScaler(), best_clf)
-    best_pipe.fit(Xtrain, ytrain)
-    print(f"# {best_k}: {best_clf} Train:{best_pipe.score(Xtrain, ytrain) * 100}")
-    print(f"# {best_k}: {best_clf} Test:{best_pipe.score(Xtest, ytest) * 100}")
-    scores = cross_val_score(best_pipe, Xpred, ypred, cv=5, n_jobs=-1, scoring='f1_macro')
-    print(f"# {best_k}: {best_clf} CV5:{np.mean(scores)} +/- {np.std(scores)}")
+def plot_multiclass_roc(clf, X_test, y_test, n_classes, figsize=(17, 6)):
+    y_score = clf.predict_proba(X_test)
 
-    # Mapa
-    # y_pred = best_pipe.predict(X)
-    # # print(y_pred)
-    # gdf = gpd.read_file('municipios/areas_geoestadisticas_municipales.shp')
-    # gdf['Key'] = gdf['CVE_ENT'] + gdf['CVE_MUN']
-    # rezago = pd.read_csv("rezago_social/rezago_social.csv")
-    # rezago_social = rezago[["lgc00_15cl3", "Key", "POB_TOTAL", "LAT", "LON"]]
-    # rezago_social['Key'] = rezago_social['Key'].astype(str).str.zfill(5)
-    # rezago_social['Pred'] = y_pred
-    # gdf = gdf.merge(rezago_social, on='Key')
-    # colors = {1: 'green', 2: 'yellow', 3: 'red'}
-    # fig, ax = plt.subplots()
-    # gdf.plot(ax=ax, color=gdf['Pred'].map(colors))
-    # plt.axis('off')
-    # plt.title("Rezago Social predicho a nivel municipal, 2015.")
-    # txt = "Predichos por modelo LR con base en categorías DENUE/SCIAN a nivel Subsector."
-    # plt.figtext(0.01, 0.01, txt, wrap=True, horizontalalignment='left', fontsize=12)
-    # plt.show()
+    # structures
+    fpr = dict()
+    tpr = dict()
+    roc_auc = dict()
 
-# 3: SVC(C=1000.0, gamma=0.0001, probability=True, random_state=0) Train:82.13740458015268
-# 3: SVC(C=1000.0, gamma=0.0001, probability=True, random_state=0) Test:76.21951219512195
-# 3: SVC(C=1000.0, gamma=0.0001, probability=True, random_state=0) CV5:0.7289454075803488 +/- 0.011785767125634656
-def main_svm():
-    max_accuracy_svm = 0
-    for k in range(2, 6):
-        denue_wide = pd.read_csv(f"summary/denue_wide_{k}.csv")
-        rezago = pd.read_csv("rezago_social/rezago_social.csv")
-        rezago_social = rezago[["lgc00_15cl3", "Key", "POB_TOTAL", "LAT", "LON", "ALT", "AREA"]]
-        df = pd.merge(rezago_social, denue_wide, on=['Key'])
-        df.drop(['Key'], axis=1, inplace=True)
-        y = df['lgc00_15cl3']
-        X = df.iloc[:, 7:].div(df.POB_TOTAL, axis=0) * 1000
-        X["LAT"] = rezago_social["LAT"]
-        X["LON"] = rezago_social["LON"]
-        #X["ALT"] = rezago_social["ALT"]
-        X["AREA"] = rezago_social["AREA"]
-        X["POB_TOTAL"] = rezago_social["POB_TOTAL"]
-        # print(X.columns)
-        # print(X.head(3))
-        print(f'# SVM {k} {X.shape}')
-        X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.20, random_state=42)
-        for c in [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]:
-            for g in [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]:
-                for kr in ['rbf', 'sigmoid']:
-                    print('\t#', c, g, kr)
-                    clf = SVC(kernel=kr, gamma=g, C=c, probability=True, random_state=0)
-                    pipeline = make_pipeline(StandardScaler(), clf)
-                    scores = cross_val_score(pipeline, X_train, y_train, cv=10, n_jobs=-1)
-                    if np.mean(scores) > max_accuracy_svm:
-                        max_accuracy_svm = np.mean(scores)
-                        print(f"\t # SVM {max_accuracy_svm}, {c}, {g}, {kr}")
-                        best_clf = clone(clf)
-                        best_k = k
-                        Xtrain, ytrain = X_train, y_train
-                        Xtest, ytest = X_test, y_test
-                        Xpred, ypred = X, y
-    print(best_clf, max_accuracy_svm)
-    best_pipe = make_pipeline(StandardScaler(), best_clf)
-    best_pipe.fit(Xtrain, ytrain)
-    print(f"# {best_k}: {best_clf} Train:{best_pipe.score(Xtrain, ytrain) * 100}")
-    print(f"# {best_k}: {best_clf} Test:{best_pipe.score(Xtest, ytest) * 100}")
-    scores = cross_val_score(best_pipe, Xpred, ypred, cv=5, n_jobs=-1)
-    print(f"# {best_k}: {best_clf} CV5:{np.mean(scores)} +/- {np.std(scores)}")
+    # calculate dummies once
+    y_test_dummies = pd.get_dummies(y_test, drop_first=False).values
+    for i in range(n_classes):
+        fpr[i], tpr[i], _ = roc_curve(y_test_dummies[:, i], y_score[:, i])
+        roc_auc[i] = auc(fpr[i], tpr[i])
 
-    # Mapa
-    # y_pred = best_pipe.predict(X)
-    # # print(y_pred)
-    # gdf = gpd.read_file('municipios/areas_geoestadisticas_municipales.shp')
-    # gdf['Key'] = gdf['CVE_ENT'] + gdf['CVE_MUN']
-    # rezago = pd.read_csv("rezago_social/rezago_social.csv")
-    # rezago_social = rezago[["lgc00_15cl3", "Key", "POB_TOTAL", "LAT", "LON"]]
-    # rezago_social['Key'] = rezago_social['Key'].astype(str).str.zfill(5)
-    # rezago_social['Pred'] = y_pred
-    # gdf = gdf.merge(rezago_social, on='Key')
-    # colors = {1: 'green', 2: 'yellow', 3: 'red'}
-    # fig, ax = plt.subplots()
-    # gdf.plot(ax=ax, color=gdf['Pred'].map(colors))
-    # plt.axis('off')
-    # plt.title("Rezago Social predicho a nivel municipal, 2015.")
-    # txt = "Predichos por modelo SVM kernel RBF con base en categorías DENUE/SCIAN a nivel Subsector."
-    # plt.figtext(0.01, 0.01, txt, wrap=True, horizontalalignment='left', fontsize=12)
-    # plt.show()
-
-
-def main_rf():
-    max_accuracy_rf = 0
-    for k in range(2, 5):
-        denue_wide = pd.read_csv(f"summary/denue_wide_{k}.csv")
-        rezago = pd.read_csv("rezago_social/rezago_social.csv")
-        rezago_social = rezago[["lgc00_15cl3", "Key", "POB_TOTAL", "LAT", "LON", "ALT", "AREA"]]
-        df = pd.merge(rezago_social, denue_wide, on=['Key'])
-        df.drop(['Key'], axis=1, inplace=True)
-        y = df['lgc00_15cl3']
-        X = df.iloc[:, 7:].div(df.AREA, axis=0) * 1000
-        X["LAT"] = rezago_social["LAT"]
-        X["LON"] = rezago_social["LON"]
-        #X["ALT"] = rezago_social["ALT"]
-        #X["AREA"] = rezago_social["AREA"]
-        X["POB_TOTAL"] = rezago_social["POB_TOTAL"]
-        # print(X.columns)
-        # print(X.head(3))
-        # print(f'# LR {k} {X.shape}')
-        print(f'# RF {k} {X.shape}')
-        X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.20, random_state=0)
-        for ne in [100, 200, 300, 400]:
-            for md in [10, 15, 20, 25, 30]:
-                for cri in ['entropy', 'gini']:
-                    for mf in ['sqrt', 'log2']:
-                        print('#\t', k, ne, md, cri, mf)
-                        clf = RandomForestClassifier(max_depth=md, n_estimators=ne, criterion=cri, max_features=mf,
-                                                     random_state=0)
-                        pipeline = make_pipeline(StandardScaler(), clf)
-                        scores = cross_val_score(pipeline, X_train, y_train, cv=10, n_jobs=-1)
-                        if np.mean(scores) > max_accuracy_rf:
-                            max_accuracy_rf = np.mean(scores)
-                            print(f"\t # RF {max_accuracy_rf}, {ne}, {md}, {cri}, {mf}")
-                            best_clf = clone(clf)
-                            best_k = k
-                            Xtrain, ytrain = X_train, y_train
-                            Xtest, ytest = X_test, y_test
-                            Xpred, ypred = X, y
-    print(best_clf, max_accuracy_rf)
-    best_pipe = make_pipeline(StandardScaler(), best_clf)
-    best_pipe.fit(Xtrain, ytrain)
-    print(f"# {best_k}: {best_clf} Train:{best_pipe.score(Xtrain, ytrain) * 100}")
-    print(f"# {best_k}: {best_clf} Test:{best_pipe.score(Xtest, ytest) * 100}")
-    scores = cross_val_score(best_pipe, Xpred, ypred, cv=5, n_jobs=-1)
-    print(f"# {best_k}: {best_clf} CV5:{np.mean(scores)} +/- {np.std(scores)}")
-
-    importance_vals = best_clf.feature_importances_
-    std = np.std([tree.feature_importances_ for tree in best_clf.estimators_],
-                 axis=0)
-    indices = np.argsort(importance_vals)[::-1]
-
-    # Plot the feature importances of the forest
-    plt.figure()
-    plt.title("Importancia de variables de entrada (RF)")
-    plt.bar(range(X.shape[1])[:10], importance_vals[indices][:10], align="center")
-    plt.xticks(range(X.shape[1])[:10], X.columns[indices][:10])
-    plt.xlim([-1, 10])
-    plt.ylim([0, 0.1])
+    # roc for each class
+    fig, ax = plt.subplots(figsize=figsize)
+    ax.plot([0, 1], [0, 1], 'k--')
+    ax.set_xlim([0.0, 1.0])
+    ax.set_ylim([0.0, 1.05])
+    ax.set_xlabel('False Positive Rate')
+    ax.set_ylabel('True Positive Rate')
+    ax.set_title('Receiver operating characteristic example')
+    for i in range(n_classes):
+        ax.plot(fpr[i], tpr[i], label='ROC curve (area = %0.2f) for label %i' % (roc_auc[i], i))
+    ax.legend(loc="best")
+    ax.grid(alpha=.4)
+    sns.despine()
     plt.show()
-    # Mapa
-    # y_pred = best_pipe.predict(X)
-    # # print(y_pred)
-    # gdf = gpd.read_file('municipios/areas_geoestadisticas_municipales.shp')
-    # gdf['Key'] = gdf['CVE_ENT'] + gdf['CVE_MUN']
-    # rezago = pd.read_csv("rezago_social/rezago_social.csv")
-    # rezago_social = rezago[["lgc00_15cl3", "Key", "POB_TOTAL", "LAT", "LON"]]
-    # rezago_social['Key'] = rezago_social['Key'].astype(str).str.zfill(5)
-    # rezago_social['Pred'] = y_pred
-    # gdf = gdf.merge(rezago_social, on='Key')
-    # colors = {1: 'green', 2: 'yellow', 3: 'red'}
-    # fig, ax = plt.subplots()
-    # gdf.plot(ax=ax, color=gdf['Pred'].map(colors))
-    # plt.axis('off')
-    # plt.title("Rezago Social predicho a nivel municipal, 2015.")
-    # txt = "Predichos por el modelo RF con base en categorías DENUE/SCIAN a nivel Rama."
-    # plt.figtext(0.01, 0.01, txt, wrap=True, horizontalalignment='left', fontsize=12)
-    # plt.show()
-    #
-    # Curva ROC
-    # y_bin = label_binarize(y, classes=[1, 2, 3])
-    # n_classes = y_bin.shape[1]
-    # y_score = cross_val_predict(best_pipe, X, y, cv=10, method='predict_proba')
-    # fpr = dict()
-    # tpr = dict()
-    # roc_auc = dict()
-    # rezago = { 1:'bajo', 2:'medio', 3:'alto'}
-    # for i in range(n_classes):
-    #     fpr[i], tpr[i], _ = roc_curve(y_bin[:, i], y_score[:, i])
-    #     roc_auc[i] = auc(fpr[i], tpr[i])
-    # colors = cycle(['green', 'yellow', 'red'])
-    # for i, color in zip(range(n_classes), colors):
-    #     plt.plot(fpr[i], tpr[i], color=color, lw=2,
-    #              label='Curva ROC para predicción de rezago {0} (area = {1:0.4f})'
-    #                    ''.format(rezago[i + 1], roc_auc[i]))
-    # plt.plot([0, 1], [0, 1], 'k--', lw=2)
-    # plt.xlim([-0.05, 1.0])
-    # plt.ylim([0.0, 1.05])
-    # plt.xlabel('Tasa de Falsos Positivos')
-    # plt.ylabel('Tasa de Verdaderos Positivos')
-    # plt.title(f"Bosque Aleatorio (RF)\nDENUE/SCIAN a nivel Rama")
-    # plt.legend(loc="lower right")
-    # plt.show()
 
 
-def main_rf2():
-    max_accuracy_rf = 0
-    for k in range(4, 5):
-        denue_wide = pd.read_csv(f"summary/Count/denue_wide_{k}.csv")
+def main_clf(metric_, clf_, grid_, range_=(2, 7), cv_=5, verb_=False, graphs=False):
+    pipe = Pipeline(steps=[('sc', StandardScaler()), ('clf', clf_)])
+    max_scoring = 0
+    for k in range(*range_):
+        denue_wide = pd.read_csv(f"summary/Count/denue_wide_{k}.csv")  ###
         rezago = pd.read_csv("rezago_social/rezago_social.csv")
         rezago_social = rezago[["lgc00_15cl3", "Key", "POB_TOTAL", "LAT", "LON"]]
         df = pd.merge(rezago_social, denue_wide, on=['Key'])
-        df.drop(['Key'], axis=1, inplace=True)
-        y = df['lgc00_15cl3']
-        X0 = df.iloc[:, 5:].div(df.POB_TOTAL, axis=0) * 1000
-        X = pd.DataFrame()
+        y = rezago_social['lgc00_15cl3']
+        df.drop(["lgc00_15cl3", "Key", "LAT", "LON"], axis=1, inplace=True)
+        X = df.div(df.POB_TOTAL, axis=0) * 1000
+        X.drop(["POB_TOTAL"], axis=1, inplace=True)
         X["LAT"] = rezago_social["LAT"]
         X["LON"] = rezago_social["LON"]
-        X["8111"] = X0["8111"]
-        X["7139"] = X0["7139"]
-        X["5311"] = X0["5311"]
-        X["8121"] = X0["8121"]
-        X["6212"] = X0["6212"]
-        X["4343"] = X0["4343"]
-        X["3118"] = X0["3118"]
-        X["8114"] = X0["8114"]
-        print(X.head())
-        print(f'# RF {k} {X.shape}')
+        print(f'# CLF {k} {X.shape}')
         X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.20, random_state=0)
-        for ne in [300]:  # [100, 200, 300, 400]:
-            for md in [30]:  # [10, 15, 20, 25, 30]:
-                for cri in ['entropy']:  # ['entropy', 'gini']:
-                    for mf in ['sqrt']:  # ['sqrt', 'log2']:
-                        print('#\t', k, ne, md, cri, mf)
-                        clf = RandomForestClassifier(max_depth=md, n_estimators=ne, criterion=cri, max_features=mf,
-                                                     random_state=0)
-                        pipeline = make_pipeline(StandardScaler(), clf)
-                        scores = cross_val_score(pipeline, X_train, y_train, cv=10, n_jobs=-1)
-                        if np.mean(scores) > max_accuracy_rf:
-                            max_accuracy_rf = np.mean(scores)
-                            print(f"\t # SVM {max_accuracy_rf}, {ne}, {md}, {cri}, {mf}")
-                            best_clf = clone(clf)
-                            best_k = k
-                            Xtrain, ytrain = X_train, y_train
-                            Xtest, ytest = X_test, y_test
-                            Xpred, ypred = X, y
-    print(best_clf, max_accuracy_rf)
-    best_pipe = make_pipeline(StandardScaler(), best_clf)
+        clf_cv = GridSearchCV(pipe, grid_, cv=10, scoring=metric_, verbose=verb_)  # cv_
+        clf_cv.fit(X_train, y_train)
+        if np.mean(clf_cv.best_score_) > max_scoring:
+            max_scoring = clf_cv.best_score_
+            print(f"\t # {k} CLF {clf_cv.best_score_} {clf_cv.best_params_}")
+            best_params = clf_cv.best_params_
+            best_k = k
+            Xtrain, ytrain = X_train, y_train
+            Xtest, ytest = X_test, y_test
+            X_, y_ = X, y
+    best_params_ = {k[5:]: v for k, v in best_params.items()}
+    best_clf = clf_.set_params(**best_params_)
+    best_pipe = Pipeline(steps=[('sc', StandardScaler()), ('clf', best_clf)])
+    print('#BEST', best_pipe, max_scoring)
     best_pipe.fit(Xtrain, ytrain)
-    print(f"# {best_k}: {best_clf} Train:{best_pipe.score(Xtrain, ytrain) * 100}")
-    print(f"# {best_k}: {best_clf} Test:{best_pipe.score(Xtest, ytest) * 100}")
-    scores = cross_val_score(best_pipe, Xpred, ypred, cv=5, n_jobs=-1)
-    print(f"# {best_k}: {best_clf} CV5:{np.mean(scores)} +/- {np.std(scores)}")
+    print(f"# {best_k}: Train:{best_pipe.score(Xtrain, ytrain) * 100}")
+    print(f"# {best_k}: Test:{best_pipe.score(Xtest, ytest) * 100}")
+    scores = cross_val_score(best_pipe, X_, y_, cv=cv_, n_jobs=-1, scoring='accuracy')
+    print(f"# {best_k}: Accuracy CV5:{np.mean(scores)} +/- {np.std(scores)}")
+    scores_ = cross_val_score(best_pipe, X_, y_, cv=cv_, n_jobs=-1, scoring=metric_)
+    print(f"# {best_k}: {metric_} CV5:{np.mean(scores_)} +/- {np.std(scores_)}")
+    y_pred = cross_val_predict(best_pipe, X_, y_, cv=cv_)
+    print(classification_report(y_, y_pred, digits=3))
 
-    importance_vals = best_clf.feature_importances_
-    std = np.std([tree.feature_importances_ for tree in best_clf.estimators_],
-                 axis=0)
-    indices = np.argsort(importance_vals)[::-1]
+    plot_multiclass_roc(best_pipe, X_, y_, n_classes=3, figsize=(16, 10))
 
-    # Plot the feature importances of the forest
-    plt.figure()
-    plt.title("Importancia de variables de entrada (RF)")
-    plt.bar(range(X.shape[1]), importance_vals[indices],
-            yerr=std[indices], align="center")
-    plt.xticks(range(X.shape[1]), X.columns[indices])
-    plt.xlim([-1, X.shape[1]])
-    plt.ylim([0, 0.5])
-    plt.show()
-    # Mapa
-    # y_pred = best_pipe.predict(X)
-    # # print(y_pred)
-    # gdf = gpd.read_file('municipios/areas_geoestadisticas_municipales.shp')
-    # gdf['Key'] = gdf['CVE_ENT'] + gdf['CVE_MUN']
-    # rezago = pd.read_csv("rezago_social/rezago_social.csv")
-    # rezago_social = rezago[["lgc00_15cl3", "Key", "POB_TOTAL", "LAT", "LON"]]
-    # rezago_social['Key'] = rezago_social['Key'].astype(str).str.zfill(5)
-    # rezago_social['Pred'] = y_pred
-    # gdf = gdf.merge(rezago_social, on='Key')
-    # colors = {1: 'green', 2: 'yellow', 3: 'red'}
-    # fig, ax = plt.subplots()
-    # gdf.plot(ax=ax, color=gdf['Pred'].map(colors))
-    # plt.axis('off')
-    # plt.title("Rezago Social predicho a nivel municipal, 2015.")
-    # txt = "Predichos por el modelo RF con base en categorías DENUE/SCIAN a nivel Rama."
-    # plt.figtext(0.01, 0.01, txt, wrap=True, horizontalalignment='left', fontsize=12)
-    # plt.show()
-    #
-    # # Curva ROC
-    # y_bin = label_binarize(y, classes=[1, 2, 3])
-    # n_classes = y_bin.shape[1]
-    # y_score = cross_val_predict(best_pipe, X, y, cv=10, method='predict_proba')
-    # fpr = dict()
-    # tpr = dict()
-    # roc_auc = dict()
-    # for i in range(n_classes):
-    #     fpr[i], tpr[i], _ = roc_curve(y_bin[:, i], y_score[:, i])
-    #     roc_auc[i] = auc(fpr[i], tpr[i])
-    # colors = cycle(['blue', 'red', 'green'])
-    # for i, color in zip(range(n_classes), colors):
-    #     plt.plot(fpr[i], tpr[i], color=color, lw=2,
-    #              label='ROC curve of class {0} (area = {1:0.6f})'
-    #                    ''.format(i + 1, roc_auc[i]))
-    # plt.plot([0, 1], [0, 1], 'k--', lw=2)
-    # plt.xlim([-0.05, 1.0])
-    # plt.ylim([0.0, 1.05])
-    # plt.xlabel('Tasa de Falsos Positivos')
-    # plt.ylabel('Tasa de Verdaderos Positivos')
-    # plt.title(f"Bosque Aleatorio (RF)\nDENUE/SCIAN a nivel Subrama")
-    # plt.legend(loc="lower right")
-    # plt.show()
+    if graphs:
+        ###
+        denue_2016 = pd.read_csv(f"summary/201610/denue_wide_{best_k}.csv")  ###
+        df_2016 = pd.merge(rezago_social, denue_2016, on=['Key'])
+        df_2016.drop(["lgc00_15cl3", "Key", "LAT", "LON"], axis=1, inplace=True)
+        X_2016 = df.div(df.POB_TOTAL, axis=0) * 1000
+        X_2016.drop(["POB_TOTAL"], axis=1, inplace=True)
+        X_2016["LAT"] = rezago_social["LAT"]
+        X_2016["LON"] = rezago_social["LON"]
+        y_pred_2016 = best_pipe.predict(X_2016)
+        ###
+        denue_2017 = pd.read_csv(f"summary/201711/denue_wide_{best_k}.csv")  ###
+        df_2017 = pd.merge(rezago_social, denue_2017, on=['Key'])
+        df_2017.drop(["lgc00_15cl3", "Key", "LAT", "LON"], axis=1, inplace=True)
+        X_2017 = df.div(df.POB_TOTAL, axis=0) * 1000
+        X_2017.drop(["POB_TOTAL"], axis=1, inplace=True)
+        X_2017["LAT"] = rezago_social["LAT"]
+        X_2017["LON"] = rezago_social["LON"]
+        y_pred_2017 = best_pipe.predict(X_2017)
+        # Confusion matrix
+        skplt.metrics.plot_confusion_matrix(y_, y_pred, normalize=True, title=" ")
+        plt.xticks([0, 1, 2], ['B', 'M', 'A'], rotation='horizontal')
+        plt.yticks([0, 1, 2], ['B', 'M', 'A'], rotation='horizontal')
+        plt.xlabel('Clases predichas')
+        plt.ylabel('Clases verdaderas')
+        plt.show()
+        # Mapa
+        rezago_social['Pred'] = y_pred
+        rezago_social['Pred_2016'] = y_pred_2016
+        rezago_social['Pred_2017'] = y_pred_2017
+        print("Rodrigo:",
+              rezago_social['Pred_2016'].equals(rezago_social['Pred_2016']),
+              rezago_social['Pred_2017'].equals(rezago_social['Pred_2017']),
+              rezago_social['Pred_2017'].equals(rezago_social['Pred_2016']),
+              rezago_social['Pred_2016'].equals(rezago_social['Pred_2017']))
+        rezago_social['Key_'] = rezago_social['Key'].astype(str).str.zfill(5)
+        gdf = gpd.read_file('municipios/areas_geoestadisticas_municipales.shp')
+        gdf['Key_'] = gdf['CVE_ENT'] + gdf['CVE_MUN']
+        gdf = gdf.merge(rezago_social, on='Key_')
+        legend_elements = [Line2D([0], [0], marker='o', color='w', label='A',
+                                  markerfacecolor='r', markersize=10, ),
+                           Line2D([0], [0], marker='o', color='w', label='M',
+                                  markerfacecolor='yellow', markersize=10),
+                           Line2D([0], [0], marker='o', color='w', label='B',
+                                  markerfacecolor='g', markersize=10)]
+        csfont = {'fontname': 'Times New Roman'}
+        font = font_manager.FontProperties(family='Times New Roman', weight='normal', style='normal', size=12)
+        colors = {1: 'green', 2: 'yellow', 3: 'red'}
+        models = {'RandomForestClassifier': 'RF', 'SCV': 'SVM', 'LogisticRegression': 'LR'}
+        ###
+        # gdf.plot(color=gdf['Pred_2016'].map(colors))
+        # plt.xticks([])
+        # plt.yticks([])
+        # txt = f"Categorías predichas por modelo {models.get(clf.__class__.__name__, 'ABC')}, para el año 201X."
+        # plt.text(800000, 0.01, txt, wrap=True, horizontalalignment='left', fontsize=12, **csfont)
+        # plt.legend(handles=legend_elements, prop=font)
+        # plt.show()
+        ### Mapa
+        fig, (ax1, ax2) = plt.subplots(1, 2)
+        gdf.plot(ax=ax1, color=gdf['Pred_2016'].map(colors))
+        ax1.set_xticks([])
+        ax1.set_yticks([])
+        txt = f"(A) Clases predichas con modelo {models.get(clf.__class__.__name__, 'ABC')} en 2016"
+        ax1.text(800000, 0.01, txt, wrap=True, horizontalalignment='left', fontsize=12, **csfont)
+        ax1.legend(handles=legend_elements, prop=font)
+        gdf.plot(ax=ax2, color=gdf['Pred_2017'].map(colors))
+        ax2.set_xticks([])
+        ax2.set_yticks([])
+        txt = f"(B) Clases predichas con modelo {models.get(clf.__class__.__name__, 'ABC')} en 2017"
+        ax2.text(800000, 0.01, txt, wrap=True, horizontalalignment='left', fontsize=12, **csfont)
+        ax2.legend(handles=legend_elements, prop=font)
+        plt.show()
+
+        ### Mapa
+        fig, (ax1, ax2) = plt.subplots(1, 2)
+        gdf.plot(ax=ax1, color=gdf['lgc00_15cl3'].map(colors), legend=True)
+        ax1.set_xticks([])
+        ax1.set_yticks([])
+        txt = "(A) Clases de acuerdo a Valdés-Cruz y Vargas-Chanes (2017)"
+        ax1.text(800000, 0.01, txt, wrap=True, horizontalalignment='left', fontsize=12, **csfont)
+        ax1.legend(handles=legend_elements, prop=font)
+        gdf.plot(ax=ax2, color=gdf['Pred'].map(colors))
+        ax2.set_xticks([])
+        ax2.set_yticks([])
+        txt = f"(B) Clases predichas con modelo {models.get(clf.__class__.__name__, 'ABC')} en 2015"
+        ax2.text(800000, 0.01, txt, wrap=True, horizontalalignment='left', fontsize=12, **csfont)
+        ax2.legend(handles=legend_elements, prop=font)
+        plt.show()
+        # Curva ROC
+        y_bin = label_binarize(y, classes=[1, 2, 3])
+        n_classes = y_bin.shape[1]
+        y_score = cross_val_predict(best_pipe, X_, y_, cv=cv_, method='predict_proba')
+        fpr = dict()
+        tpr = dict()
+        roc_auc = dict()
+        for i in range(n_classes):
+            fpr[i], tpr[i], _ = roc_curve(y_bin[:, i], y_score[:, i])
+            roc_auc[i] = auc(fpr[i], tpr[i])
+        all_fpr = np.unique(np.concatenate([fpr[i] for i in range(n_classes)]))
+        mean_tpr = np.zeros_like(all_fpr)
+        for i in range(n_classes):
+            mean_tpr += np.interp(all_fpr, fpr[i], tpr[i])
+        mean_tpr /= n_classes
+        fpr["macro"] = all_fpr
+        tpr["macro"] = mean_tpr
+        roc_auc["macro"] = auc(fpr["macro"], tpr["macro"])
+        plt.figure()
+        plt.plot(fpr["macro"], tpr["macro"],
+                 label='ROC macro (AUC = {0:0.3f})'
+                       ''.format(roc_auc["macro"]),
+                 color='navy', linestyle=':', linewidth=4)
+        rezago = {1: 'B', 2: 'M', 3: 'A'}
+        colors = cycle(['green', 'yellow', 'red'])
+        for i, color in zip(range(n_classes), colors):
+            plt.plot(fpr[i], tpr[i], color=color, lw=2,
+                     label='Clase de rezago {0} (AUC = {1:0.3f})'
+                           ''.format(rezago[i + 1], roc_auc[i]))
+        plt.plot([0, 1], [0, 1], 'k--', lw=2)
+        plt.xlim([-0.05, 1.0])
+        plt.ylim([0.0, 1.05])
+        plt.xlabel('TFP', fontsize=12, **csfont)
+        plt.ylabel('TVP', fontsize=12, **csfont)
+        plt.legend(loc="lower right", prop=font)
+        plt.show()
+    return scores_
 
 
 if __name__ == '__main__':
-    main_lr()
+    # Metrica de desempeño
+    metric = 'f1_macro'
+
+    # LR
+    grid = {"clf__C": [0.1],  # np.logspace(-4, 3, 8),
+            "clf__multi_class": ['multinomial'],  # ['ovr', 'multinomial'],
+            "clf__solver": ['lbfgs']}  # ['lbfgs', 'saga']}
+    clf = LogisticRegression(penalty='l2', random_state=0)
+    # lr_scores = main_clf(metric, clf, grid, range_=(3, 4), verb_=10, graphs=True)
+
+    # SVM
+    grid = [{"clf__kernel": ['rbf'],
+             "clf__decision_function_shape": ['ovr', 'ovo'],
+             "clf__C": [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0],
+             "clf__gamma": [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]},
+            # {"clf__kernel": ['linear'],
+            #  "clf__decision_function_shape": ['ovr', 'ovo'],
+            #  "clf__C": [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]},
+            {"clf__kernel": ['sigmoid'],
+             "clf__decision_function_shape": ['ovr', 'ovo'],
+             "clf__C": [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0],
+             "clf__gamma": [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0],
+             "clf__coef0": np.arange(0, 6, 1)},
+            # {"clf__kernel": ['poly'],
+            #  "clf__decision_function_shape": ['ovr', 'ovo'],
+            #  "clf__gamma": [0.0001, 0.001, 0.01, 0.1, 1.0],
+            #  "clf__degree": [2, 3, 4, 5],
+            #  "clf__coef0": np.arange(0, 10, 1)},
+            ]
+    clf = SVC(probability=True, random_state=0)
+    # svm_scores = main_clf(metric, clf, grid, range_=(3, 4), verb_=10)
+
+    # RF
+    grid = [{"clf__n_estimators": [250],  # [100, 150, 200, 250, 300, 350, 400],
+             "clf__criterion": ['entropy'],  # ['entropy', 'gini'],
+             "clf__max_features": ['sqrt'],  # ['sqrt', 'log2'],
+             "clf__max_depth": [20]}]  # , [5, 10, 15, 20, 25, 30, 35, 40]}]
+    clf = RandomForestClassifier(random_state=0)
+    rf_scores = main_clf(metric, clf, grid, range_=(3, 4), graphs=False)
+
+    # scores = [lr_scores, svm_scores, rf_scores]
+    # plt.boxplot(scores)
+    # plt.show()

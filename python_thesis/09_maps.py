@@ -28,14 +28,27 @@ legend_elements = [Line2D([0], [0], marker='o', color='w', label='Alto',
                    Line2D([0], [0], marker='o', color='w', label='Bajo',
                           markerfacecolor='g', markersize=15)]
 
-
+csfont = {'fontname': 'Times New Roman'}
 colors = {1: 'green', 2: 'yellow', 3: 'red'}
-fig, ax = plt.subplots()
-gdf.plot(ax=ax, color=gdf['lgc00_15cl3'].map(colors), legend=True)
+fig, (ax1, ax2) = plt.subplots(1, 2)
+gdf.plot(ax=ax1, color=gdf['lgc00_15cl3'].map(colors), legend=True)
 # centers.plot(ax=ax, column='capital', marker='*', markersize=1, color='black')
-plt.axis('off')
-plt.title("Mapa de Rezago Social a nivel municipal, 2015.")
-txt = "Construido de acuerdo a las categorías de Rezago Social sugeridas por Vargas-Chanes y Valdez-Cruz (2017)."
-plt.figtext(0.01, 0.01, txt, wrap=True, horizontalalignment='left', fontsize=12)
-plt.legend(handles=legend_elements)
+# plt.axis('off')
+ax1.set_xticks([])
+ax1.set_yticks([])
+ax1.set_title("Mapa de Rezago Social a nivel municipal, 2015.", **csfont)
+txt = "Categorías de Rezago Social sugeridas por Valdez-Cruz y Vargas-Chanes (2017)."
+ax1.text(0.01, 0.01, txt, wrap=True, horizontalalignment='left', fontsize=12, **csfont)
+ax1.legend(handles=legend_elements)
+###
+gdf.plot(ax=ax2, color=gdf['lgc00_15cl3'].map(colors), legend=True)
+# centers.plot(ax=ax, column='capital', marker='*', markersize=1, color='black')
+# plt.axis('off')
+ax2.set_xticks([])
+ax2.set_yticks([])
+ax2.set_title("Mapa de Rezago Social a nivel municipal, 2015.", **csfont)
+txt = "Categorías de Rezago Social sugeridas por Valdez-Cruz y Vargas-Chanes (2017)."
+ax2.text(0.01, 0.01, txt, wrap=True, horizontalalignment='left', fontsize=12, **csfont)
+ax2.legend(handles=legend_elements)
+###
 plt.show()

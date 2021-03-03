@@ -19,7 +19,7 @@ for state in states:
     state.click()
     sleep(10)
     tree = html.fromstring(browser.page_source)
-    file = tree.xpath('//a[@aria-label="Descarga el archivo 2017/11 en formato csv"]/@href')
+    file = tree.xpath('//a[@aria-label="Descarga el archivo 2016/10 en formato csv"]/@href')
     print(file)
     files.extend(file)
 browser.quit()
