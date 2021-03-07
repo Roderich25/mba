@@ -1,7 +1,7 @@
 import pandas as pd
 from scipy.stats import f_oneway
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, ElasticNet
 from sklearn.metrics import classification_report
 from sklearn.model_selection import cross_val_score, cross_val_predict, train_test_split, GridSearchCV
 from sklearn.neural_network import MLPClassifier
@@ -15,18 +15,19 @@ def main_clf(metric_, clf_, grid_, range_=(2, 7), cv_=5, verb_=False):
     pipe = Pipeline(steps=[('sc', StandardScaler()), ('clf', clf_)])
     max_scoring = 0
     for k in range(*range_):
-        denue_wide = pd.read_csv(f"summary/Count/denue_wide_{k}.csv")
+        denue_wide = pd.read_csv(f"summary/Count_Personal/denue_wide_{k}.csv")
         rezago = pd.read_csv("rezago_social/rezago_social.csv")
         rezago_social = rezago[['grs2015', "lgc00_15cl3", "Key", "POB_TOTAL", "LAT", "LON", "ALT", "BASSOLS"]]
         df = pd.merge(rezago_social, denue_wide, on=['Key'])
-        df = df.loc[df['grs2015'].isin(['Muy bajo', 'Bajo', 'Medio', 'Alto', 'Muy alto'])]
-        df['grs2015'] = df['grs2015'].map({'Muy bajo': 1, 'Bajo': 1, 'Medio': 2, 'Alto': 3, 'Muy alto': 3})
-        Key_ = 'grs2015'
+        # df = df.loc[df['grs2015'].isin(['Muy bajo', 'Bajo', 'Medio', 'Alto', 'Muy alto'])]
+        # df['grs2015'] = df['grs2015'].map({'Muy bajo': 1, 'Bajo': 1, 'Medio': 2, 'Alto': 3, 'Muy alto': 3})
+        Key_ = 'lgc00_15cl3'
         y = df[Key_]
         df.drop(['grs2015', "lgc00_15cl3", "Key", "LAT", "LON", "ALT", "BASSOLS", "POB_TOTAL"], axis=1, inplace=True)
-        X = df.div(df.sum(axis=1), axis=0)  # .div(df.POB_TOTAL, axis=0) * 1000
+        X = df.div(df.sum(axis=1), axis=0)
+        X = X.div(rezago_social.POB_TOTAL, axis=0) * 1000
         cols = []
-        for col in df.columns[1:]:
+        for col in X.columns:#df.columns[1:]:
             df_new = pd.concat([y, X[col]], axis=1)
             # print(col, df_new.groupby('lgc00_15cl3').mean().to_numpy().reshape((3,)))
             a = df_new[df_new[Key_] == 1][col].to_numpy().reshape((-1,))
@@ -40,9 +41,13 @@ def main_clf(metric_, clf_, grid_, range_=(2, 7), cv_=5, verb_=False):
         X["LAT"] = rezago_social["LAT"]
         X["LON"] = rezago_social["LON"]
         print(X.columns)
+        print(X.head())
+        print(X.shape)
         print(y.value_counts())
         print(y.value_counts(normalize=True))
         print(np.unique(y))
+        # def main():
+        #    while True:
         ###
         print(f'# CLF {k} {X.shape}')
         X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.20, random_state=0)
@@ -78,7 +83,7 @@ if __name__ == '__main__':
     # LR
     grid = {"clf__C": np.logspace(-4, 3, 8)}
     clf = LogisticRegression(penalty='l2', random_state=0, max_iter=2000)
-    main_clf(metric, clf, grid, range_=(2, 7), verb_=10)
+    # main_clf(metric, clf, grid, range_=(3, 7), verb_=10)
 
     grid = [{"clf__kernel": ['rbf'],
              "clf__C": [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0],
@@ -112,3 +117,10 @@ if __name__ == '__main__':
     }
     clf = MLPClassifier(random_state=0, max_iter=2000)
     # main_clf(metric, clf, grid, range_=(2, 7), verb_=10)
+
+    grid = {
+        "clf__l1_ratio": np.linspace(.05, .95, 19),
+        # "clf__alpha": np.logspace(-4, 1, 30)
+    }
+    clf = LogisticRegression(penalty='elasticnet', solver='saga', random_state=0)
+    main_clf(metric, clf, grid, range_=(2, 7), verb_=10)

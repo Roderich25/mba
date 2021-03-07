@@ -13,8 +13,8 @@ from itertools import cycle
 import geopandas as gpd
 import matplotlib
 
-import seaborn as sns
-import scikitplot as skplt
+# import seaborn as sns
+# import scikitplot as skplt
 
 matplotlib.rcParams['font.family'] = 'Times New Roman'
 matplotlib.rcParams["font.weight"] = "bold"
@@ -235,14 +235,16 @@ if __name__ == '__main__':
     grid = [{"clf__kernel": ['rbf'],
              "clf__decision_function_shape": ['ovr', 'ovo'],
              "clf__C": [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0],
-             "clf__gamma": [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]},
+             "clf__gamma": [0.01, 0.5, 1.0, 2.5, 5, 10]},
+            # "clf__gamma": [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]},
             # {"clf__kernel": ['linear'],
             #  "clf__decision_function_shape": ['ovr', 'ovo'],
             #  "clf__C": [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]},
             {"clf__kernel": ['sigmoid'],
              "clf__decision_function_shape": ['ovr', 'ovo'],
              "clf__C": [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0],
-             "clf__gamma": [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0],
+             "clf__gamma": [0.01, 0.5, 1.0, 2.5, 5, 10],
+             # "clf__gamma": [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0],
              "clf__coef0": np.arange(0, 6, 1)},
             # {"clf__kernel": ['poly'],
             #  "clf__decision_function_shape": ['ovr', 'ovo'],
@@ -251,7 +253,7 @@ if __name__ == '__main__':
             #  "clf__coef0": np.arange(0, 10, 1)},
             ]
     clf = SVC(probability=True, random_state=0)
-    # svm_scores = main_clf(metric, clf, grid, range_=(3, 4), verb_=10)
+    svm_scores = main_clf(metric, clf, grid, range_=(2, 7), verb_=10)
 
     # RF
     grid = [{"clf__n_estimators": [250],  # [100, 150, 200, 250, 300, 350, 400],
@@ -259,8 +261,18 @@ if __name__ == '__main__':
              "clf__max_features": ['sqrt'],  # ['sqrt', 'log2'],
              "clf__max_depth": [20]}]  # , [5, 10, 15, 20, 25, 30, 35, 40]}]
     clf = RandomForestClassifier(random_state=0)
-    rf_scores = main_clf(metric, clf, grid, range_=(3, 4), graphs=False)
+    # rf_scores = main_clf(metric, clf, grid, range_=(3, 4), graphs=False)
 
     # scores = [lr_scores, svm_scores, rf_scores]
     # plt.boxplot(scores)
     # plt.show()
+
+    # LR
+    grid = {
+        "clf__l1_ratio": np.arange(0.1, 1.1, 0.05),
+        "clf__max_iter": [100, 1000, 2000, 5000, 10000],
+        "clf__tol": [0.0001, 0.001, 0.01],
+        "clf__multi_class": ['ovr', 'multinomial'],
+    }
+    clf = LogisticRegression(penalty='elasticnet', solver='saga', random_state=0)
+    # lr_scores = main_clf(metric, clf, grid, range_=(2, 6), verb_=10)
