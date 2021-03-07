@@ -91,7 +91,7 @@ def main_clf(metric_, clf_, grid_, range_=(2, 7), cv_=5, verb_=False, graphs=Fal
     y_pred = cross_val_predict(best_pipe, X_, y_, cv=cv_)
     print(classification_report(y_, y_pred, digits=3))
 
-    plot_multiclass_roc(best_pipe, X_, y_, n_classes=3, figsize=(16, 10))
+    # plot_multiclass_roc(best_pipe, X_, y_, n_classes=3, figsize=(16, 10))
 
     if graphs:
         ###
@@ -253,7 +253,7 @@ if __name__ == '__main__':
             #  "clf__coef0": np.arange(0, 10, 1)},
             ]
     clf = SVC(probability=True, random_state=0)
-    svm_scores = main_clf(metric, clf, grid, range_=(2, 7), verb_=10)
+    # svm_scores = main_clf(metric, clf, grid, range_=(2, 7), verb_=10)
 
     # RF
     grid = [{"clf__n_estimators": [250],  # [100, 150, 200, 250, 300, 350, 400],
@@ -269,10 +269,10 @@ if __name__ == '__main__':
 
     # LR
     grid = {
-        "clf__l1_ratio": np.arange(0.1, 1.1, 0.05),
-        "clf__max_iter": [100, 1000, 2000, 5000, 10000],
-        "clf__tol": [0.0001, 0.001, 0.01],
+        "clf__l1_ratio": np.arange(0.25, 0.55, 0.01),
+        "clf__max_iter": [2000, 5000, 10000],
+        "clf__tol": [0.0001, 0.001],
         "clf__multi_class": ['ovr', 'multinomial'],
     }
     clf = LogisticRegression(penalty='elasticnet', solver='saga', random_state=0)
-    # lr_scores = main_clf(metric, clf, grid, range_=(2, 6), verb_=10)
+    lr_scores = main_clf(metric, clf, grid, range_=(2, 5), verb_=10)
