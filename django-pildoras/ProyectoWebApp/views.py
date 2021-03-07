@@ -5,10 +5,6 @@ class MyHomeView(TemplateView):
     template_name = 'ProyectoWebApp/home.html'
 
 
-class BlogView(TemplateView):
-    template_name = 'ProyectoWebApp/blog.html'
-
-
 class TiendaView(TemplateView):
     template_name = 'ProyectoWebApp/tienda.html'
 
