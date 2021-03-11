@@ -2,7 +2,8 @@ from matplotlib.lines import Line2D
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import roc_curve, auc, classification_report
+from sklearn.metrics import roc_curve, auc, classification_report, plot_roc_curve, precision_recall_curve, \
+    average_precision_score
 from sklearn.model_selection import train_test_split, cross_val_score, cross_val_predict, GridSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, label_binarize
@@ -12,9 +13,9 @@ from matplotlib import pyplot as plt, font_manager
 from itertools import cycle
 import geopandas as gpd
 import matplotlib
-
-# import seaborn as sns
-# import scikitplot as skplt
+import mord
+import seaborn as sns
+import scikitplot as skplt
 
 matplotlib.rcParams['font.family'] = 'Times New Roman'
 matplotlib.rcParams["font.weight"] = "bold"
@@ -92,6 +93,25 @@ def main_clf(metric_, clf_, grid_, range_=(2, 7), cv_=5, verb_=False, graphs=Fal
     print(classification_report(y_, y_pred, digits=3))
 
     # plot_multiclass_roc(best_pipe, X_, y_, n_classes=3, figsize=(16, 10))
+    probas = cross_val_predict(best_pipe, X_, y_, cv=cv_, method='predict_proba')
+    fig, (ax1, ax2) = plt.subplots(1, 2)
+    skplt.metrics.plot_roc(y_, probas, ax=ax1, title='')
+    handles, labels = ax1.get_legend_handles_labels()
+    print(labels)
+    labels = [lb.replace(' 1 ', ' B ').replace(' 2 ', ' M ').replace(' 3 ', ' A ') for lb in labels]
+    print(labels)
+    ax1.legend(handles, labels)
+    ax1.get_figure()
+    ax1.set_xlabel('TFP\n(A)')
+    skplt.metrics.plot_precision_recall(y_, probas, ax=ax2, title='')
+    handles, labels = ax2.get_legend_handles_labels()
+    print(labels)
+    labels = [lb.replace(' 1 ', ' B ').replace(' 2 ', ' M ').replace(' 3 ', ' A ') for lb in labels]
+    print(labels)
+    ax2.legend(handles, labels)
+    ax2.get_figure()
+    ax2.set_xlabel('S\n(B)')
+    plt.show()
 
     if graphs:
         ###
@@ -229,7 +249,7 @@ if __name__ == '__main__':
             "clf__multi_class": ['multinomial'],  # ['ovr', 'multinomial'],
             "clf__solver": ['lbfgs']}  # ['lbfgs', 'saga']}
     clf = LogisticRegression(penalty='l2', random_state=0)
-    # lr_scores = main_clf(metric, clf, grid, range_=(3, 4), verb_=10, graphs=True)
+    # lr_scores = main_clf(metric, clf, grid, range_=(3, 4), verb_=10, graphs=False)
 
     # SVM
     grid = [{"clf__kernel": ['rbf'],
@@ -261,7 +281,7 @@ if __name__ == '__main__':
              "clf__max_features": ['sqrt'],  # ['sqrt', 'log2'],
              "clf__max_depth": [20]}]  # , [5, 10, 15, 20, 25, 30, 35, 40]}]
     clf = RandomForestClassifier(random_state=0)
-    # rf_scores = main_clf(metric, clf, grid, range_=(3, 4), graphs=False)
+    rf_scores = main_clf(metric, clf, grid, range_=(3, 4), graphs=False)
 
     # scores = [lr_scores, svm_scores, rf_scores]
     # plt.boxplot(scores)
@@ -269,10 +289,17 @@ if __name__ == '__main__':
 
     # LR
     grid = {
-        "clf__l1_ratio": np.arange(0.25, 0.55, 0.01),
-        "clf__max_iter": [2000, 5000, 10000],
-        "clf__tol": [0.0001, 0.001],
-        "clf__multi_class": ['ovr', 'multinomial'],
+        "clf__l1_ratio": [0.4],  # np.arange(0.25, 0.55, 0.01),
+        "clf__max_iter": [5000],
+        "clf__tol": [0.001],
+        "clf__multi_class": ['multinomial'],
     }
     clf = LogisticRegression(penalty='elasticnet', solver='saga', random_state=0)
-    lr_scores = main_clf(metric, clf, grid, range_=(2, 5), verb_=10)
+    # lr_scores = main_clf(metric, clf, grid, range_=(3, 4), verb_=10)
+
+    # LR
+    grid = {
+        "clf__alpha": np.arange(0, 1, 1)
+    }
+    # clf = mord.LAD()
+    # main_clf(metric, clf, grid, range_=(2, 3), verb_=10)
