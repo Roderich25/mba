@@ -12,9 +12,10 @@ class BlogView(ListView):
 
 class CategoryView(ListView):
     # pk_url_kwarg = 'category_id'
+    context_object_name = 'posts'
     template_name = 'blog/categorias.html'
-    context_object_name = 'categories'
     queryset = Post.objects.all()
+    extra_context = {'categorias': Categoria.objects.all()}
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(self.__class__, self).get_context_data(**kwargs)
