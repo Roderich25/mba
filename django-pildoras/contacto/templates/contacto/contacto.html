@@ -1,7 +1,13 @@
 {% extends 'ProyectoWebApp/base.html' %}
 {% load static %}
 {% block content %}
-    <div style="color: white" align="center">
-        {{form.as_ul}}
+    <div  class="contenedorFormulario" align="center">
+        <form action="" method="POST">
+            {% csrf_token %}
+            <table style="color: white; margin: 20px">
+            {{form.as_table}}
+            </table>
+            <button type="submit" style="width: 120px">Enviar</button>
+        </form>
     </div>
 {% endblock%}
