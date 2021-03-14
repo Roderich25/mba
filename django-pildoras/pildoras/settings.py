@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'progress.apps.ProgressConfig',
     'django_celery_results',
     'celery_progress',
+    'captcha',
 ]
 
 MIDDLEWARE = [

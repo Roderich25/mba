@@ -12,6 +12,7 @@ urlpatterns = [
     path('contacto/', include('contacto.urls', namespace='contacto')),
     path('progress/', include('progress.urls', namespace='progress')),
     path('celery-progress/', include('celery_progress.urls')),
+    path('captcha/', include('captcha.urls')),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
