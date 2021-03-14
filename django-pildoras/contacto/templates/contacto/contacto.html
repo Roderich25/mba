@@ -1,17 +1,20 @@
 {% extends 'ProyectoWebApp/base.html' %}
 {% load static %}
+{% if messages %}
+{% endif %}
 {% block content %}
+    <ul style="color: white; width: 50%; margin: auto" >
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
     <div  class="contenedorFormulario" align="center">
         <form action="" method="POST">
             {% csrf_token %}
             <table style="color: white; margin: 20px">
             {{form.as_table}}
             </table>
-            <button type="submit" style="width: 120px">Enviar</button>
+            <input type="submit" value="Enviar" style="width: 120px"/>
         </form>
     </div>
-
-<div style="color:white">
-    {{request.POST}}
-</div>
 {% endblock%}
