@@ -19,7 +19,7 @@ class ContactoView(FormView):
         contenido = self.request.POST.get('contenido', None)
         dte = timezone.now()
 
-        c = Contacto(nombre=nombre, email=correo, contenido=contenido, fecha=dte)
+        c = Contacto(nombre=nombre, email=correo, contenido=contenido)
         c.save()
 
         messages.success(self.request, f'Gracias {nombre}, en breve obtendra una respuesta a su email: {correo}.')
