@@ -3,11 +3,11 @@
 {% if messages %}
 {% endif %}
 {% block content %}
-    <ul style="color: white; width: 50%; margin: auto" >
+    <div class="messages" >
         {% for message in messages %}
-        <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        <li {% if message.tags %} class="message {{ message.tags }}"{% endif %}>{{ message }}</li>
         {% endfor %}
-    </ul>
+    </div>
     <div  class="contenedorFormulario" align="center">
         <form action="" method="POST">
             {% csrf_token %}
