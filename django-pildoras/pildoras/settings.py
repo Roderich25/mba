@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'servicios.apps.ServiciosConfig',
     'blog.apps.BlogConfig',
     'contacto.apps.ContactoConfig',
+    'tienda.apps.TiendaConfig',
     # other apps
     'hashing.apps.HashingConfig',
     'progress.apps.ProgressConfig',

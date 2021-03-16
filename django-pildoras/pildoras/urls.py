@@ -10,6 +10,7 @@ urlpatterns = [
     path('servicios/', include('servicios.urls', namespace='servicios')),
     path('blog/', include('blog.urls', namespace='blog')),
     path('contacto/', include('contacto.urls', namespace='contacto')),
+    path('tienda/', include('tienda.urls', namespace='tienda')),
     path('progress/', include('progress.urls', namespace='progress')),
     path('celery-progress/', include('celery_progress.urls')),
     path('captcha/', include('captcha.urls')),
