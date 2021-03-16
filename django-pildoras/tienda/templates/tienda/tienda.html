@@ -1,5 +1,10 @@
 {% extends 'ProyectoWebApp/base.html' %}
 {% load static %}
 {% block content %}
-    <div align="center"><p style="color:white;">TIENDA</p></div>
+    <div align="center">
+        {% for producto in productos %}
+            <p style="color:white;">{{producto}}</p>
+            <img src="{{producto.imagen.url}}"/>
+        {% endfor %}
+    </div>
 {% endblock%}

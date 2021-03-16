@@ -1,5 +1,8 @@
-from django.views.generic import TemplateView
+from django.views.generic import ListView
+from tienda.models import Producto
 
 
-class TiendaView(TemplateView):
+class TiendaView(ListView):
+    model = Producto
+    context_object_name = "productos"
     template_name = 'tienda/tienda.html'
