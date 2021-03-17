@@ -16,6 +16,7 @@ class CategoriaProducto(models.Model):
 
 class Producto(models.Model):
     nombre = models.CharField(max_length=60)
+    descripcion = models.CharField(max_length=200)
     categorias = models.ForeignKey(CategoriaProducto, on_delete=models.CASCADE)
     imagen = models.ImageField(upload_to="tienda", null=True, blank=True)
     precio = models.DecimalField(decimal_places=2, max_digits=10)
