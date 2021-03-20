@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django_celery_results',
     'celery_progress',
     'captcha',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
