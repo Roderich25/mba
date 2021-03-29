@@ -249,7 +249,7 @@ if __name__ == '__main__':
             "clf__multi_class": ['multinomial'],  # ['ovr', 'multinomial'],
             "clf__solver": ['lbfgs']}  # ['lbfgs', 'saga']}
     clf = LogisticRegression(penalty='l2', random_state=0)
-    # lr_scores = main_clf(metric, clf, grid, range_=(3, 4), verb_=10, graphs=False)
+    lr_scores = main_clf(metric, clf, grid, range_=(3, 4), verb_=10, graphs=False)
 
     # SVM
     grid = [{"clf__kernel": ['rbf'],
@@ -281,7 +281,7 @@ if __name__ == '__main__':
              "clf__max_features": ['sqrt'],  # ['sqrt', 'log2'],
              "clf__max_depth": [20]}]  # , [5, 10, 15, 20, 25, 30, 35, 40]}]
     clf = RandomForestClassifier(random_state=0)
-    rf_scores = main_clf(metric, clf, grid, range_=(3, 4), graphs=False)
+    # rf_scores = main_clf(metric, clf, grid, range_=(3, 4), graphs=False)
 
     # scores = [lr_scores, svm_scores, rf_scores]
     # plt.boxplot(scores)
