@@ -70,4 +70,4 @@ if __name__ == '__main__':
             "clf__multi_class": ['ovr', 'multinomial'],
             "clf__solver": ['lbfgs', 'saga']}
     clf = LogisticRegression(penalty='l2', random_state=0, max_iter=10000)
-    main_clf(metric, clf, grid, range_=(3, 6), verb_=10)
+    main_clf(metric, clf, grid, range_=(6, 7), verb_=10)
