@@ -1,7 +1,7 @@
 from matplotlib.lines import Line2D
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, VotingClassifier
 from sklearn.metrics import roc_curve, auc, classification_report, plot_roc_curve, precision_recall_curve, \
     average_precision_score
 from sklearn.model_selection import train_test_split, cross_val_score, cross_val_predict, GridSearchCV
@@ -58,17 +58,17 @@ def main_clf(metric_, clf_, grid_, range_=(2, 7), cv_=5, verb_=False, graphs=Fal
     for k in range(*range_):
         denue_wide = pd.read_csv(f"summary/Count/denue_wide_{k}.csv")  ###
         rezago = pd.read_csv("rezago_social/rezago_social.csv")
-        rezago_social = rezago[["lgc00_15cl3", "Key", "POB_TOTAL", "LAT", "LON"]]
+        rezago_social = rezago[["lgc00_15cl3_2", "Key", "POB_TOTAL", "LAT", "LON"]]
         df = pd.merge(rezago_social, denue_wide, on=['Key'])
-        y = rezago_social['lgc00_15cl3']
-        df.drop(["lgc00_15cl3", "Key", "LAT", "LON"], axis=1, inplace=True)
+        y = rezago_social['lgc00_15cl3_2']
+        df.drop(["lgc00_15cl3_2", "Key", "LAT", "LON"], axis=1, inplace=True)
         X = df.div(df.POB_TOTAL, axis=0) * 1000
         X.drop(["POB_TOTAL"], axis=1, inplace=True)
         X["LAT"] = rezago_social["LAT"]
         X["LON"] = rezago_social["LON"]
         print(f'# CLF {k} {X.shape}')
         X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=0.20, random_state=0)
-        clf_cv = GridSearchCV(pipe, grid_, cv=10, scoring=metric_, verbose=verb_)  # cv_
+        clf_cv = GridSearchCV(pipe, grid_, cv=cv_, scoring=metric_, verbose=verb_)  # cv_
         clf_cv.fit(X_train, y_train)
         if np.mean(clf_cv.best_score_) > max_scoring:
             max_scoring = clf_cv.best_score_
@@ -92,28 +92,28 @@ def main_clf(metric_, clf_, grid_, range_=(2, 7), cv_=5, verb_=False, graphs=Fal
     y_pred = cross_val_predict(best_pipe, X_, y_, cv=cv_)
     print(classification_report(y_, y_pred, digits=3))
 
-    # plot_multiclass_roc(best_pipe, X_, y_, n_classes=3, figsize=(16, 10))
-    probas = cross_val_predict(best_pipe, X_, y_, cv=cv_, method='predict_proba')
-    fig, (ax1, ax2) = plt.subplots(1, 2)
-    skplt.metrics.plot_roc(y_, probas, ax=ax1, title='')
-    handles, labels = ax1.get_legend_handles_labels()
-    #print(labels)
-    labels = [lb.replace(' 1 ', ' B ').replace(' 2 ', ' M ').replace(' 3 ', ' A ') for lb in labels]
-    # print(labels)
-    ax1.legend(handles, labels)
-    ax1.get_figure()
-    ax1.set_xlabel('TFP\n(A)')
-    skplt.metrics.plot_precision_recall(y_, probas, ax=ax2, title='')
-    handles, labels = ax2.get_legend_handles_labels()
-    # print(labels)
-    labels = [lb.replace(' 1 ', ' B ').replace(' 2 ', ' M ').replace(' 3 ', ' A ') for lb in labels]
-    # print(labels)
-    ax2.legend(handles, labels)
-    ax2.get_figure()
-    ax2.set_xlabel('S\n(B)')
-    plt.show()
-
     if graphs:
+        # plot_multiclass_roc(best_pipe, X_, y_, n_classes=3, figsize=(16, 10))
+        probas = cross_val_predict(best_pipe, X_, y_, cv=cv_, method='predict_proba')
+        fig, (ax1, ax2) = plt.subplots(1, 2)
+        skplt.metrics.plot_roc(y_, probas, ax=ax1, title='')
+        handles, labels = ax1.get_legend_handles_labels()
+        # print(labels)
+        labels = [lb.replace(' 1 ', ' B ').replace(' 2 ', ' M ').replace(' 3 ', ' A ') for lb in labels]
+        # print(labels)
+        ax1.legend(handles, labels)
+        ax1.get_figure()
+        ax1.set_xlabel('TFP\n(A)')
+        skplt.metrics.plot_precision_recall(y_, probas, ax=ax2, title='')
+        handles, labels = ax2.get_legend_handles_labels()
+        # print(labels)
+        labels = [lb.replace(' 1 ', ' B ').replace(' 2 ', ' M ').replace(' 3 ', ' A ') for lb in labels]
+        # print(labels)
+        ax2.legend(handles, labels)
+        ax2.get_figure()
+        ax2.set_xlabel('S\n(B)')
+        plt.show()
+
         ### 2016
         denue_2016 = pd.read_csv(f"summary/201610/denue_wide_{best_k}.csv")  ###
         df_2016 = pd.merge(rezago_social, denue_2016, on=['Key'])
@@ -173,7 +173,7 @@ def main_clf(metric_, clf_, grid_, range_=(2, 7), cv_=5, verb_=False, graphs=Fal
         # rezago_social['Pred_2018'] = y_pred_2018
         # rezago_social['Pred_2019'] = y_pred_2019
         # rezago_social['Pred_2020'] = y_pred_2020
-        rezago_social.to_csv('predictions.csv') ###
+        rezago_social.to_csv('predictions.csv')  ###
         rezago_social['Key_'] = rezago_social['Key'].astype(str).str.zfill(5)
         gdf = gpd.read_file('municipios/areas_geoestadisticas_municipales.shp')
         gdf['Key_'] = gdf['CVE_ENT'] + gdf['CVE_MUN']
@@ -271,70 +271,30 @@ if __name__ == '__main__':
     metric = 'f1_macro'
 
     # LR
-    grid = {"clf__C": [0, 0.1],  # np.logspace(-4, 3, 8),
-            "clf__multi_class": ['multinomial'],  # ['ovr', 'multinomial'],
-            "clf__solver": ['lbfgs']}  # ['lbfgs', 'saga']}
-    clf = LogisticRegression(penalty='l2', random_state=0)
-    #lr_scores = main_clf(metric, clf, grid, range_=(3, 4), verb_=10, graphs=False)
-
-    # SVM
-    grid = [{"clf__kernel": ['rbf'],
-             "clf__decision_function_shape": ['ovr', 'ovo'],
-             "clf__C": [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0],
-             "clf__gamma": [0.01, 0.5, 1.0, 2.5, 5, 10]},
-            # "clf__gamma": [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]},
-            # {"clf__kernel": ['linear'],
-            #  "clf__decision_function_shape": ['ovr', 'ovo'],
-            #  "clf__C": [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0]},
-            {"clf__kernel": ['sigmoid'],
-             "clf__decision_function_shape": ['ovr', 'ovo'],
-             "clf__C": [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0],
-             "clf__gamma": [0.01, 0.5, 1.0, 2.5, 5, 10],
-             # "clf__gamma": [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0],
-             "clf__coef0": np.arange(0, 6, 1)},
-            # {"clf__kernel": ['poly'],
-            #  "clf__decision_function_shape": ['ovr', 'ovo'],
-            #  "clf__gamma": [0.0001, 0.001, 0.01, 0.1, 1.0],
-            #  "clf__degree": [2, 3, 4, 5],
-            #  "clf__coef0": np.arange(0, 10, 1)},
-            ]
-    clf = SVC(probability=True, random_state=0)
-    # svm_scores = main_clf(metric, clf, grid, range_=(2, 7), verb_=10)
-
-    # RF
-    grid = [{"clf__n_estimators": [250],  # [100, 150, 200, 250, 300, 350, 400],
-             "clf__criterion": ['entropy'],  # ['entropy', 'gini'],
-             "clf__max_features": ['sqrt'],  # ['sqrt', 'log2'],
-             "clf__max_depth": [20]}]  # , [5, 10, 15, 20, 25, 30, 35, 40]}]
-    clf = RandomForestClassifier(random_state=0)
-    rf_scores = main_clf(metric, clf, grid, range_=(3, 4), graphs=True)
-
-    # scores = [lr_scores, svm_scores, rf_scores]
-    # plt.boxplot(scores)
-    # plt.show()
-
-    # LR
-    grid = {
-        "clf__l1_ratio": [0.4],  # np.arange(0.25, 0.55, 0.01),
-        "clf__max_iter": [5000],
-        "clf__tol": [0.001],
-        "clf__multi_class": ['multinomial'],
-    }
-    clf = LogisticRegression(penalty='elasticnet', solver='saga', random_state=0)
-    # lr_scores = main_clf(metric, clf, grid, range_=(3, 4), verb_=10)
-
-    # LR
-    grid = {
-        "clf__alpha": np.arange(0, 1, 1)
-    }
-    # clf = mord.LAD()
-    # main_clf(metric, clf, grid, range_=(2, 3), verb_=10)
-
-    # LR
-    grid = {"clf__C": np.logspace(-4, 3, 8),
-            "clf__multi_class": ['ovr', 'multinomial'],
-            "clf__class_weight": [{1: 1, 2: 1, 3: 1}, {1: 1, 2: 1, 3: 2}, {1: 1, 2: 1, 3: 3}, {1: 1, 2: 1, 3: 4},
-                                  {1: 1, 2: 1, 3: 5}, ],
-            "clf__solver": ['lbfgs', 'saga']}
+    grid = [{"clf__C": [0.1],
+             "clf__multi_class": ['multinomial'],
+             "clf__solver": ['lbfgs']}, ]
     clf = LogisticRegression(penalty='l2', random_state=0)
     # lr_scores = main_clf(metric, clf, grid, range_=(3, 4), verb_=10, graphs=False)
+
+    # SVM
+    grid = [{"clf__kernel": ['sigmoid'],
+             "clf__C": [1000],
+             "clf__gamma": [0.0001], }, ]
+    clf = SVC(probability=True, random_state=0)
+    # svm_scores = main_clf(metric, clf, grid, range_=(3, 4), verb_=10, graphs=False)
+
+    # RF
+    grid = [{"clf__n_estimators": [250],
+             "clf__criterion": ['entropy'],
+             "clf__max_features": ['sqrt'],
+             "clf__max_depth": [20]}, ]
+    clf = RandomForestClassifier(random_state=0)
+    # rf_scores = main_clf(metric, clf, grid, range_=(3, 4), graphs=False)
+
+    clf1 = LogisticRegression(penalty='l2', C=0.01, multi_class='multinomial', random_state=0)
+    clf2 = SVC(kernel='sigmoid', C=1000, gamma=0.0001, probability=True, random_state=0)
+    clf3 = RandomForestClassifier(n_estimators=230, criterion='entropy', max_features='sqrt', max_depth=20, random_state=0)
+    grid = [{"clf__voting": ['soft', 'hard']}]
+    clf = VotingClassifier(estimators=[('lr', clf1), ('svm', clf2), ('rf', clf3)])
+    main_clf(metric, clf, grid, range_=(3, 4), graphs=False)

@@ -1,12 +1,10 @@
 import numpy as np
 import sys
 
-from sklearn.metrics import accuracy_score, f1_score
-
 
 class NeuralNetMLP(object):
 
-    def __init__(self, n_hidden=30,
+    def __init__(self, n_hidden=32,
                  l2=0., epochs=100, eta=0.001,
                  shuffle=True, minibatch_size=1, seed=None):
 
@@ -22,8 +20,8 @@ class NeuralNetMLP(object):
         onehot = np.zeros((n_classes, y.shape[0]))
         for idx, val in enumerate(y):
             onehot[0:val, idx] = 1.
-        # print(np.unique(y))
-        # print(np.unique(onehot.T, axis=0))
+        print(np.unique(y))
+        print(np.unique(onehot.T, axis=0))
         return onehot.T
 
     def _sigmoid(self, z):
@@ -74,8 +72,9 @@ class NeuralNetMLP(object):
 
         term1 = -y_enc * (np.log(output))
         term2 = (1. - y_enc) * np.log(1. - output)
-        cost = np.sum(term1 - term2) + L2_term
+        # cost = np.sum(term1 - term2) + L2_term
 
+        cost = np.sum((y_enc - output) ** 2)
         # If you are applying this cost function to other
         # datasets where activation
         # values maybe become more extreme (closer to zero or 1)
@@ -109,7 +108,6 @@ class NeuralNetMLP(object):
         z_h, a_h, z_out, a_out = self._forward(X)
         # y_pred = np.argmax(z_out, axis=1)
         y_pred = np.sum(np.round(a_out), axis=1)
-        # print(np.unique(np.round(a_out), axis=0))  # observar orden de las salidas
         return y_pred
 
     def fit(self, X_train, y_train, X_valid, y_valid):
@@ -149,7 +147,7 @@ class NeuralNetMLP(object):
                                         size=(self.n_hidden, n_output))
 
         epoch_strlen = len(str(self.epochs))  # for progress formatting
-        self.eval_ = {'cost': [], 'train_acc': [], 'valid_acc': [], 'train_f1': [], 'valid_f1': []}
+        self.eval_ = {'cost': [], 'train_acc': [], 'valid_acc': []}
 
         y_train_enc = self._onehot(y_train, n_output)
 
@@ -174,7 +172,7 @@ class NeuralNetMLP(object):
                 ##################
 
                 # [n_samples, n_classlabels]
-                sigma_out = a_out - y_train_enc[batch_idx]
+                sigma_out = -2*(y_train_enc[batch_idx] - a_out) * (a_out * (1 - a_out))  # a_out - y_train_enc[batch_idx]
 
                 # [n_samples, n_hidden]
                 sigmoid_derivative_h = a_h * (1. - a_h)
@@ -217,26 +215,19 @@ class NeuralNetMLP(object):
             y_train_pred = self.predict(X_train)
             y_valid_pred = self.predict(X_valid)
 
-            # train_acc = ((np.sum(y_train == y_train_pred)).astype(np.float) /
-            #             X_train.shape[0])
-            # valid_acc = ((np.sum(y_valid == y_valid_pred)).astype(np.float) /
-            #             X_valid.shape[0])
-
-            train_acc = accuracy_score(y_train, y_train_pred)
-            valid_acc = accuracy_score(y_valid, y_valid_pred)
-            train_f1 = f1_score(y_train, y_train_pred, average='macro')
-            valid_f1 = f1_score(y_valid, y_valid_pred, average='macro')
+            train_acc = ((np.sum(y_train == y_train_pred)).astype(np.float) /
+                         X_train.shape[0])
+            valid_acc = ((np.sum(y_valid == y_valid_pred)).astype(np.float) /
+                         X_valid.shape[0])
 
             sys.stderr.write('\r%0*d/%d | Cost: %.2f '
-                             '| Train/Valid Acc.: %.2f%%/%.2f%% | Train/Valid F1-macro: %.2f%%/%.2f%%' %
+                             '| Train/Valid Acc.: %.2f%%/%.2f%% ' %
                              (epoch_strlen, i + 1, self.epochs, cost,
-                              train_acc * 100, valid_acc * 100, train_f1 * 100, valid_f1 * 100))
+                              train_acc * 100, valid_acc * 100))
             sys.stderr.flush()
 
             self.eval_['cost'].append(cost)
             self.eval_['train_acc'].append(train_acc)
             self.eval_['valid_acc'].append(valid_acc)
-            self.eval_['train_f1'].append(train_f1)
-            self.eval_['valid_f1'].append(valid_f1)
 
         return self
