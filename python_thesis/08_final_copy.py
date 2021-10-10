@@ -92,6 +92,8 @@ def main_clf(metric_, clf_, grid_, range_=(2, 7), cv_=5, verb_=False, graphs=Fal
     y_pred = cross_val_predict(best_pipe, X_, y_, cv=cv_)
     print(classification_report(y_, y_pred, digits=3))
 
+    print(np.unique(np.array(y_pred),return_counts=True))
+
     if graphs:
         # plot_multiclass_roc(best_pipe, X_, y_, n_classes=3, figsize=(16, 10))
         probas = cross_val_predict(best_pipe, X_, y_, cv=cv_, method='predict_proba')
@@ -99,7 +101,7 @@ def main_clf(metric_, clf_, grid_, range_=(2, 7), cv_=5, verb_=False, graphs=Fal
         skplt.metrics.plot_roc(y_, probas, ax=ax1, title='')
         handles, labels = ax1.get_legend_handles_labels()
         # print(labels)
-        labels = [lb.replace(' 1 ', ' B ').replace(' 2 ', ' M ').replace(' 3 ', ' A ') for lb in labels]
+        labels = [lb.replace(' 1 ', ' A ').replace(' 2 ', ' M ').replace(' 3 ', ' B ') for lb in labels]
         # print(labels)
         ax1.legend(handles, labels)
         ax1.get_figure()
@@ -107,7 +109,7 @@ def main_clf(metric_, clf_, grid_, range_=(2, 7), cv_=5, verb_=False, graphs=Fal
         skplt.metrics.plot_precision_recall(y_, probas, ax=ax2, title='')
         handles, labels = ax2.get_legend_handles_labels()
         # print(labels)
-        labels = [lb.replace(' 1 ', ' B ').replace(' 2 ', ' M ').replace(' 3 ', ' A ') for lb in labels]
+        labels = [lb.replace(' 1 ', ' A ').replace(' 2 ', ' M ').replace(' 3 ', ' B ') for lb in labels]
         # print(labels)
         ax2.legend(handles, labels)
         ax2.get_figure()
@@ -117,16 +119,17 @@ def main_clf(metric_, clf_, grid_, range_=(2, 7), cv_=5, verb_=False, graphs=Fal
         ### 2016
         denue_2016 = pd.read_csv(f"summary/201610/denue_wide_{best_k}.csv")  ###
         df_2016 = pd.merge(rezago_social, denue_2016, on=['Key'])
-        df_2016.drop(["lgc00_15cl3", "Key", "LAT", "LON"], axis=1, inplace=True)
+        df_2016.drop(["lgc00_15cl3_2", "Key", "LAT", "LON"], axis=1, inplace=True)
         X_2016 = df_2016.div(df.POB_TOTAL, axis=0) * 1000
         X_2016.drop(["POB_TOTAL"], axis=1, inplace=True)
         X_2016["LAT"] = rezago_social["LAT"]
         X_2016["LON"] = rezago_social["LON"]
+        print(X_2016.columns)
         y_pred_2016 = best_pipe.predict(X_2016)
         ### 2017
         denue_2017 = pd.read_csv(f"summary/201711/denue_wide_{best_k}.csv")  ###
         df_2017 = pd.merge(rezago_social, denue_2017, on=['Key'])
-        df_2017.drop(["lgc00_15cl3", "Key", "LAT", "LON"], axis=1, inplace=True)
+        df_2017.drop(["lgc00_15cl3_2", "Key", "LAT", "LON"], axis=1, inplace=True)
         X_2017 = df_2017.div(df.POB_TOTAL, axis=0) * 1000
         X_2017.drop(["POB_TOTAL"], axis=1, inplace=True)
         X_2017["LAT"] = rezago_social["LAT"]
@@ -178,15 +181,15 @@ def main_clf(metric_, clf_, grid_, range_=(2, 7), cv_=5, verb_=False, graphs=Fal
         gdf = gpd.read_file('municipios/areas_geoestadisticas_municipales.shp')
         gdf['Key_'] = gdf['CVE_ENT'] + gdf['CVE_MUN']
         gdf = gdf.merge(rezago_social, on='Key_')
-        legend_elements = [Line2D([0], [0], marker='o', color='w', label='A',
-                                  markerfacecolor='r', markersize=10, ),
+        legend_elements = [Line2D([0], [0], marker='o', color='w', label='B',
+                                  markerfacecolor='g', markersize=10, ),
                            Line2D([0], [0], marker='o', color='w', label='M',
                                   markerfacecolor='yellow', markersize=10),
-                           Line2D([0], [0], marker='o', color='w', label='B',
-                                  markerfacecolor='g', markersize=10)]
+                           Line2D([0], [0], marker='o', color='w', label='A',
+                                  markerfacecolor='r', markersize=10)]
         csfont = {'fontname': 'Times New Roman'}
         font = font_manager.FontProperties(family='Times New Roman', weight='normal', style='normal', size=12)
-        colors = {1: 'green', 2: 'yellow', 3: 'red'}
+        colors = {3: 'green', 2: 'yellow', 1: 'red'}
         models = {'RandomForestClassifier': 'RF', 'SCV': 'SVM', 'LogisticRegression': 'LR'}
         ###
         # gdf.plot(color=gdf['Pred_2016'].map(colors))
@@ -201,30 +204,34 @@ def main_clf(metric_, clf_, grid_, range_=(2, 7), cv_=5, verb_=False, graphs=Fal
         gdf.plot(ax=ax1, color=gdf['Pred_2016'].map(colors))
         ax1.set_xticks([])
         ax1.set_yticks([])
-        txt = f"(A) Clases predichas con modelo {models.get(clf.__class__.__name__, 'ABC')} en 2016"
-        ax1.text(800000, 0.01, txt, wrap=True, horizontalalignment='left', fontsize=12, **csfont)
+        # txt = f"(A) Clases predichas con modelo {models.get(clf.__class__.__name__, 'ABC')} en 2016"
+        ax1.set_xlabel("(A)", **csfont)
+        # ax1.text(800000, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=12, **csfont)
         ax1.legend(handles=legend_elements, prop=font)
         gdf.plot(ax=ax2, color=gdf['Pred_2017'].map(colors))
         ax2.set_xticks([])
         ax2.set_yticks([])
-        txt = f"(B) Clases predichas con modelo {models.get(clf.__class__.__name__, 'ABC')} en 2017"
-        ax2.text(800000, 0.01, txt, wrap=True, horizontalalignment='left', fontsize=12, **csfont)
+        # txt = f"(B) Clases predichas con modelo {models.get(clf.__class__.__name__, 'ABC')} en 2017"
+        ax2.set_xlabel("(B)", **csfont)
+        # ax2.text(800000, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=12, **csfont)
         ax2.legend(handles=legend_elements, prop=font)
         plt.show()
 
         ### Mapa
         fig, (ax1, ax2) = plt.subplots(1, 2)
-        gdf.plot(ax=ax1, color=gdf['lgc00_15cl3'].map(colors), legend=True)
+        gdf.plot(ax=ax1, color=gdf['lgc00_15cl3_2'].map(colors), legend=True)
         ax1.set_xticks([])
         ax1.set_yticks([])
-        txt = "(A) Clases de acuerdo a Valdés-Cruz y Vargas-Chanes (2017)"
-        ax1.text(800000, 0.01, txt, wrap=True, horizontalalignment='left', fontsize=12, **csfont)
+        # txt = "(A) Clases de acuerdo a Valdés-Cruz y Vargas-Chanes (2017)"
+        ax1.set_xlabel("(A)", **csfont)
+        # ax1.text(800000, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=12, **csfont)
         ax1.legend(handles=legend_elements, prop=font)
         gdf.plot(ax=ax2, color=gdf['Pred'].map(colors))
         ax2.set_xticks([])
         ax2.set_yticks([])
-        txt = f"(B) Clases predichas con modelo {models.get(clf.__class__.__name__, 'ABC')} en 2015"
-        ax2.text(800000, 0.01, txt, wrap=True, horizontalalignment='left', fontsize=12, **csfont)
+        # txt = f"(B) Clases predichas con modelo {models.get(clf.__class__.__name__, 'ABC')} en 2015"
+        ax2.set_xlabel("(B)", **csfont)
+        # ax2.text(800000, 0.01, txt, wrap=True, horizontalalignment='center', fontsize=12, **csfont)
         ax2.legend(handles=legend_elements, prop=font)
         plt.show()
         # Curva ROC
@@ -290,11 +297,11 @@ if __name__ == '__main__':
              "clf__max_features": ['sqrt'],
              "clf__max_depth": [20]}, ]
     clf = RandomForestClassifier(random_state=0)
-    # rf_scores = main_clf(metric, clf, grid, range_=(3, 4), graphs=False)
+    rf_scores = main_clf(metric, clf, grid, range_=(3, 4), graphs=False)
 
-    clf1 = LogisticRegression(penalty='l2', C=0.01, multi_class='multinomial', random_state=0)
-    clf2 = SVC(kernel='sigmoid', C=1000, gamma=0.0001, probability=True, random_state=0)
-    clf3 = RandomForestClassifier(n_estimators=230, criterion='entropy', max_features='sqrt', max_depth=20, random_state=0)
-    grid = [{"clf__voting": ['soft', 'hard']}]
-    clf = VotingClassifier(estimators=[('lr', clf1), ('svm', clf2), ('rf', clf3)])
-    main_clf(metric, clf, grid, range_=(3, 4), graphs=False)
+    # clf1 = LogisticRegression(penalty='l2', C=0.01, multi_class='multinomial', random_state=0)
+    # clf2 = SVC(kernel='sigmoid', C=1000, gamma=0.0001, probability=True, random_state=0)
+    # clf3 = RandomForestClassifier(n_estimators=230, criterion='entropy', max_features='sqrt', max_depth=20, random_state=0)
+    # grid = [{"clf__voting": ['soft', 'hard']}]
+    # clf = VotingClassifier(estimators=[('lr', clf1), ('svm', clf2), ('rf', clf3)])
+    # main_clf(metric, clf, grid, range_=(3, 4), graphs=False)
