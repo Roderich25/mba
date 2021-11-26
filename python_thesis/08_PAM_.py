@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 from sklearn.preprocessing import StandardScaler
 from sklearn_extra.cluster import KMedoids
 from sklearn.decomposition import PCA
@@ -27,9 +28,25 @@ for k in range(3, 4):
         pca = PCA(n_components=2)
         X_pca = pca.fit_transform(X_std)
 
+        print('>>>', pca.explained_variance_)
+
+
+        ##
+        # print("PCA shape:", X_pca.shape, distance)
+        legend_elements = [Line2D([0], [0], marker='o', color='w', label='B', markerfacecolor='green', markersize=9),
+                           Line2D([0], [0], marker='o', color='w', label='M', markerfacecolor='yellow', markersize=9),
+                           Line2D([0], [0], marker='o', color='w', label='A', markerfacecolor='red', markersize=9)]
+        colors = {1: 'green', 2: 'yellow', 3: 'red'}
+        plt.scatter(X_pca[:, 0], X_pca[:, 1], c=y.map(colors), s=5)
+        plt.legend(handles=legend_elements)
+        plt.xlabel("Componente principal 1")
+        plt.ylabel("Componente principal 2")
+        plt.show()
+        ##
+
         all = ['euclidean', 'l2', 'l1', 'manhattan', 'cityblock', 'braycurtis', 'canberra', 'chebyshev', 'correlation',
                'cosine', 'minkowski', 'sqeuclidean', 'nan_euclidean']
-        for distance in ['l1', 'manhattan', 'cityblock']:
+        for distance in ['l1']:  # , 'manhattan', 'cityblock']:
             # PCA
             print("PCA shape:", X_pca.shape, distance)
             colors = {1: 'green', 2: 'yellow', 3: 'red'}
