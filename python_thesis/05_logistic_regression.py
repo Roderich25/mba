@@ -1,9 +1,6 @@
 from matplotlib.lines import Line2D
 from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
-from sklearn.ensemble import RandomForestClassifier, VotingClassifier
-from sklearn.metrics import roc_curve, auc, classification_report, plot_roc_curve, precision_recall_curve, \
-    average_precision_score
+from sklearn.metrics import roc_curve, auc, classification_report
 from sklearn.model_selection import train_test_split, cross_val_score, cross_val_predict, GridSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, label_binarize
@@ -13,10 +10,8 @@ from matplotlib import pyplot as plt, font_manager
 from itertools import cycle
 import geopandas as gpd
 import matplotlib
-import mord
 import seaborn as sns
 import scikitplot as skplt
-
 matplotlib.rcParams['font.family'] = 'Times New Roman'
 matplotlib.rcParams["font.weight"] = "bold"
 matplotlib.rcParams["axes.labelweight"] = "bold"
